@@ -1,0 +1,3 @@
+# Verified with CPython 3.11.16, Windows, conda environment course.
+numpy==2.4.6
+pandas==3.0.5

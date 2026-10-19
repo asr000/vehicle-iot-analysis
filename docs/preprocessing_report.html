@@ -1,0 +1,730 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>车辆物联网 A 数据工程交付报告</title><style>
+*{box-sizing:border-box}body{font:16px/1.75 'Microsoft YaHei',sans-serif;color:#17253a;background:#f3f6fb;margin:0}
+main{width:calc(100% - 32px);max-width:1248px;margin:28px auto;background:white;padding:30px 32px;border-radius:12px}
+h1{font-size:29px;margin:0 0 8px}h2{font-size:23px;margin-top:34px;border-bottom:2px solid #dce7f5;padding-bottom:7px}
+p,li{overflow-wrap:anywhere}.meta{color:#54657a}.callout{padding:16px 20px;background:#eaf3ff;border-left:4px solid #2668ad}
+.notice{background:#fff4dc;border-left:4px solid #bd7a13;padding:14px 20px}.scroll{overflow-x:auto}
+table{border-collapse:collapse;table-layout:fixed;width:100%;font-size:13px;margin:15px 0}th,td{border:1px solid #d8e0ea;padding:9px 10px;text-align:left;overflow-wrap:anywhere}
+th{background:#edf3fa}tr:nth-child(even){background:#fafcff}code{background:#edf1f7;padding:2px 5px}pre{background:#17253a;color:#f1f6ff;padding:18px;overflow:auto}
+summary{cursor:pointer;font-weight:bold;padding:10px;background:#f3f6fb}a{color:#1c62aa}@media print{body{background:white}main{margin:0;padding:0;max-width:none}.scroll{overflow:visible}h2{break-after:avoid}tr{break-inside:avoid}}
+</style></head><body><main><h1>车辆物联网 A 数据工程交付报告</h1>
+<p class="meta">生成时间：2026-10-19T20:17:55+08:00　环境：Python 3.11.16 / pandas 3.0.5 / NumPy 2.4.6</p>
+<div class="callout"><strong>程序验收已通过。</strong>正式宽表包含 35,306 个设备时间窗口、55 列；保留可解释的缺失值和原始告警编码，并提供逐单元格来源与程序验收结果。</div>
+<h2>数据介绍</h2><p>数据由用户提供，文件名为“题2_车辆物联网遥测.csv”，未提供公开下载地址或官方字段字典。共 173,853 条记录、6 列、3 个设备、52 种变量。时间范围为 2020-08-17 00:00:02 至 2020-08-24 12:23:15，时区未标注。原始文件 SHA256：<code>e0f5571f74c6922ab7b5e65a34c52b2939b79bb33768eef30b124d3467333779</code>。</p>
+<table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>设备</th>
+      <th>原始记录数</th>
+      <th>变量数</th>
+      <th>起始时间</th>
+      <th>结束时间</th>
+      <th>观测窗口数</th>
+      <th>核心子集窗口</th>
+      <th>核心五项齐全</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>车辆1</td>
+      <td>15657</td>
+      <td>41</td>
+      <td>2020-08-21 14:27:04</td>
+      <td>2020-08-24 12:23:15</td>
+      <td>1547</td>
+      <td>450</td>
+      <td>356</td>
+    </tr>
+    <tr>
+      <td>车辆2</td>
+      <td>5558</td>
+      <td>50</td>
+      <td>2020-08-17 11:31:02</td>
+      <td>2020-08-19 15:47:07</td>
+      <td>767</td>
+      <td>207</td>
+      <td>67</td>
+    </tr>
+    <tr>
+      <td>车辆3</td>
+      <td>152638</td>
+      <td>42</td>
+      <td>2020-08-17 00:00:02</td>
+      <td>2020-08-23 21:39:57</td>
+      <td>32992</td>
+      <td>2479</td>
+      <td>1661</td>
+    </tr>
+  </tbody>
+</table><details><summary>原始设备编号对应表</summary><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>设备别名</th>
+      <th>原始设备编号</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>车辆1</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+    </tr>
+    <tr>
+      <td>车辆2</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+    </tr>
+    <tr>
+      <td>车辆3</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+    </tr>
+  </tbody>
+</table></details>
+<h2>清洗规则与处理结果</h2><ol>
+<li>时间：所有 timestamp 均可解析。timeMili 缺失 121,651 条，保留原值；52,202 条可比较记录的钟面差均为 5 小时 30 分钟。未据此擅自指定地理时区。</li>
+<li>重复：完全重复和“设备、时间、变量”重复均为 0，没有执行重复删除。</li>
+<li>位置：90,355 条 POSITION 均可拆成三个数值，暂命名 position_1、position_2、position_3。经纬度顺序及第三项含义等待字段说明，不将候选解释写成已知事实。</li>
+<li>数值：83,498 条非位置记录中有 29 条转换失败，全部属于 PIDNameNotAvailable。该变量共 35 条，全部退出数值宽表并单独保存；其余 83,463 条数值记录保留。异常文件之间存在重叠，不可相加计算删除数量。</li>
+<li>时间窗口：同一设备独立处理，窗口为 [起点, 起点+10秒)，每个字段取窗口内最后一个非空值，删除全部测量字段为空的窗口；不跨设备、不跨窗口传递数值。</li>
+<li>缺失：无观测保留为空，不补零、不做无限前向填充或插值。missing_mask.csv 中 1 表示缺失、0 表示有观测。未报告的时间段不生成人造完整轨迹。</li>
+<li>数值核查：提供分设备分变量的范围、分位数、负值和常量统计。对适用的连续数值使用 1.5 IQR 标记待核查候选，全部保留原值；统计极端值不等于传感器错误，未按未经确认的单位阈值裁剪。</li></ol>
+<h2>覆盖率与窗口选择</h2><p>下表是各字段的<strong>缺失百分比</strong>，分母为对应设备实际存在遥测记录的 10 秒窗口。长表的 value 无缺失，不代表每个变量在每个窗口都有观测。没有任何遥测记录的完整空档未计入该分母。</p>
+<div class="scroll"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>设备</th>
+      <th>X加速度缺失%</th>
+      <th>Y加速度缺失%</th>
+      <th>Z加速度缺失%</th>
+      <th>转速缺失%</th>
+      <th>车速缺失%</th>
+      <th>位置分量1缺失%</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>全量</td>
+      <td>91.71</td>
+      <td>92.55</td>
+      <td>92.38</td>
+      <td>92.81</td>
+      <td>93.62</td>
+      <td>0.16</td>
+    </tr>
+    <tr>
+      <td>车辆1</td>
+      <td>71.88</td>
+      <td>74.47</td>
+      <td>73.11</td>
+      <td>73.04</td>
+      <td>74.40</td>
+      <td>0.65</td>
+    </tr>
+    <tr>
+      <td>车辆2</td>
+      <td>85.01</td>
+      <td>78.62</td>
+      <td>79.92</td>
+      <td>88.27</td>
+      <td>88.53</td>
+      <td>2.09</td>
+    </tr>
+    <tr>
+      <td>车辆3</td>
+      <td>92.79</td>
+      <td>93.72</td>
+      <td>93.57</td>
+      <td>93.84</td>
+      <td>94.64</td>
+      <td>0.09</td>
+    </tr>
+  </tbody>
+</table></div>
+<p>10 秒是本次交付的工程基线，依据主要数值变量常见约 5 秒、位置常见约 3 秒的采样间隔；不是经下游预测效果证明的最优窗口。不同窗口下的覆盖情况如下，百分比表示有效观测覆盖：</p>
+<div class="scroll"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>窗口</th>
+      <th>观测窗口数</th>
+      <th>车速有效%</th>
+      <th>转速有效%</th>
+      <th>X加速度有效%</th>
+      <th>Y加速度有效%</th>
+      <th>Z加速度有效%</th>
+      <th>核心五项齐全</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>5s</td>
+      <td>63140</td>
+      <td>5.65</td>
+      <td>6.78</td>
+      <td>7.57</td>
+      <td>6.48</td>
+      <td>6.69</td>
+      <td>2684</td>
+    </tr>
+    <tr>
+      <td>10s</td>
+      <td>35306</td>
+      <td>6.38</td>
+      <td>7.19</td>
+      <td>8.29</td>
+      <td>7.45</td>
+      <td>7.62</td>
+      <td>2084</td>
+    </tr>
+    <tr>
+      <td>30s</td>
+      <td>13001</td>
+      <td>8.29</td>
+      <td>8.91</td>
+      <td>9.62</td>
+      <td>9.28</td>
+      <td>9.41</td>
+      <td>1061</td>
+    </tr>
+    <tr>
+      <td>60s</td>
+      <td>6702</td>
+      <td>10.55</td>
+      <td>10.80</td>
+      <td>11.00</td>
+      <td>10.70</td>
+      <td>10.89</td>
+      <td>700</td>
+    </tr>
+  </tbody>
+</table></div>
+<p>另提供 analysis_core_windows.csv，仅筛选至少具有一项车速、转速、三轴加速度观测的 3,136 个窗口，其中五项齐全的有 2,084 个。该子集与主表的筛选差异明确记录，不能把它的缺失率当成全量数据的缺失率。</p>
+<h2>告警编码与关联规则</h2><div class="notice">发现 12,134 个同设备同时间记录组存在不同编码，8,799 个 10 秒窗口包含多个编码。未定义编码 0 为正常，未取最大值或多数票制造单一类别。</div>
+<table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>原始编码</th>
+      <th>标签记录数</th>
+      <th>记录占比%</th>
+      <th>业务含义</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>133468</td>
+      <td>76.77</td>
+      <td>未提供；不推断为正常或某种故障</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>13539</td>
+      <td>7.79</td>
+      <td>未提供；不推断为正常或某种故障</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>8306</td>
+      <td>4.78</td>
+      <td>未提供；不推断为正常或某种故障</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>5480</td>
+      <td>3.15</td>
+      <td>未提供；不推断为正常或某种故障</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>7337</td>
+      <td>4.22</td>
+      <td>未提供；不推断为正常或某种故障</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>5723</td>
+      <td>3.29</td>
+      <td>未提供；不推断为正常或某种故障</td>
+    </tr>
+  </tbody>
+</table>
+<p>alarm_records.csv 保留全部 173,853 条原始标签记录及原始数据行号，包含编码 0；它们不是已经去重识别的独立告警事件。alarm_windows.csv 按 deviceId、timestamp 与 clean_wide.csv 关联，保留每个编码的记录数、编码集合和 multi_code。single_alarmClass 仅在窗口内只有一个编码时填写，多编码窗口保持为空。编码记录数不等于独立告警发生次数。</p>
+<p>C 应结合完整告警明细定义事件或分类样本；做告警前状态预测时只能使用事件发生前的原始观测。整窗汇总可能包含窗口后部观测，不能直接作为窗口起点或较早事件的预测输入。编码汇总列也不应作为输入特征泄漏标签。</p>
+<h2>字段说明与数值核查</h2><p>正式宽表共 2 个键和 53 个测量字段。完整字典见 <a href="../data/quality/data_dictionary.csv">data_dictionary.csv</a>；中文解释依据原变量名，不代表官方单位或编码释义。</p>
+<details><summary>展开 50 种数值变量的统计范围与核查数量</summary><div class="scroll"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>原始变量名</th>
+      <th>数值记录数</th>
+      <th>不同值数量</th>
+      <th>最小值</th>
+      <th>中位数</th>
+      <th>最大值</th>
+      <th>全局IQR候选数</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ABSOLULTE BAROMETRIC PRESSURE</td>
+      <td>70</td>
+      <td>2</td>
+      <td>2.500000</td>
+      <td>100.00</td>
+      <td>100.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ABSOLUTE LOAD VALUE</td>
+      <td>1097</td>
+      <td>4</td>
+      <td>0.000000</td>
+      <td>30.00</td>
+      <td>90.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ABSOLUTE THROTTLE POSITION B</td>
+      <td>2116</td>
+      <td>35</td>
+      <td>0.000000</td>
+      <td>15.00</td>
+      <td>42.00</td>
+      <td>212</td>
+    </tr>
+    <tr>
+      <td>ABSOLUTE THROTTLE POSITION D</td>
+      <td>2117</td>
+      <td>40</td>
+      <td>0.000000</td>
+      <td>20.00</td>
+      <td>58.00</td>
+      <td>173</td>
+    </tr>
+    <tr>
+      <td>ABSOLUTE THROTTLE POSITION E</td>
+      <td>1956</td>
+      <td>25</td>
+      <td>0.000000</td>
+      <td>9.00</td>
+      <td>31.00</td>
+      <td>141</td>
+    </tr>
+    <tr>
+      <td>ACCELERATION X</td>
+      <td>5046</td>
+      <td>707</td>
+      <td>-7.200000</td>
+      <td>0.60</td>
+      <td>7.00</td>
+      <td>416</td>
+    </tr>
+    <tr>
+      <td>ACCELERATION Y</td>
+      <td>4322</td>
+      <td>435</td>
+      <td>-17.400002</td>
+      <td>-8.60</td>
+      <td>16.00</td>
+      <td>683</td>
+    </tr>
+    <tr>
+      <td>ACCELERATION Z</td>
+      <td>4447</td>
+      <td>68</td>
+      <td>-12.500000</td>
+      <td>3.75</td>
+      <td>18.75</td>
+      <td>490</td>
+    </tr>
+    <tr>
+      <td>ACTUAL ENGIN - PERCENT TORQUE</td>
+      <td>63</td>
+      <td>12</td>
+      <td>5.000000</td>
+      <td>25.00</td>
+      <td>60.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>AIR INTAKE TEMPERATURE</td>
+      <td>883</td>
+      <td>4</td>
+      <td>20.000000</td>
+      <td>60.00</td>
+      <td>80.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>AMBIENT AIR TEMPERATURE</td>
+      <td>26</td>
+      <td>2</td>
+      <td>4.000000</td>
+      <td>20.00</td>
+      <td>20.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>CALCULATED ENGINE LOAD</td>
+      <td>2290</td>
+      <td>21</td>
+      <td>0.000000</td>
+      <td>30.00</td>
+      <td>100.00</td>
+      <td>122</td>
+    </tr>
+    <tr>
+      <td>CATALYST TEMPERATURE BANK 1 SENSOR 1</td>
+      <td>1786</td>
+      <td>29</td>
+      <td>30.000000</td>
+      <td>570.00</td>
+      <td>870.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>COMMANDED EVAPORATIVE PURGE</td>
+      <td>819</td>
+      <td>11</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>100.00</td>
+      <td>92</td>
+    </tr>
+    <tr>
+      <td>COMMANDED THROTTLE ACTUATOR</td>
+      <td>2289</td>
+      <td>44</td>
+      <td>0.000000</td>
+      <td>6.00</td>
+      <td>47.00</td>
+      <td>110</td>
+    </tr>
+    <tr>
+      <td>CONTROL MODULE VOLTAGE</td>
+      <td>875</td>
+      <td>3</td>
+      <td>2.000000</td>
+      <td>14.00</td>
+      <td>14.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
+      <td>838</td>
+      <td>5</td>
+      <td>60.000000</td>
+      <td>65520.00</td>
+      <td>65520.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>DISTANCE TRAVELED WITH MIL ON</td>
+      <td>685</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>1000.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>DRIVER'S DEMAND ENGIN - PERCENT TORQUE</td>
+      <td>60</td>
+      <td>13</td>
+      <td>5.000000</td>
+      <td>40.00</td>
+      <td>100.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ENGINE COOLANT TEMPERATURE</td>
+      <td>1091</td>
+      <td>14</td>
+      <td>-30.000000</td>
+      <td>85.00</td>
+      <td>100.00</td>
+      <td>114</td>
+    </tr>
+    <tr>
+      <td>ENGINE REFERENCE TORQUE</td>
+      <td>16</td>
+      <td>2</td>
+      <td>60.000000</td>
+      <td>120.00</td>
+      <td>120.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ENGINE RPM</td>
+      <td>4514</td>
+      <td>245</td>
+      <td>0.000000</td>
+      <td>1150.00</td>
+      <td>9000.00</td>
+      <td>89</td>
+    </tr>
+    <tr>
+      <td>EXTERNAL BATTERY</td>
+      <td>9625</td>
+      <td>27</td>
+      <td>8.000000</td>
+      <td>38.00</td>
+      <td>48.00</td>
+      <td>1237</td>
+    </tr>
+    <tr>
+      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
+      <td>1150</td>
+      <td>6</td>
+      <td>0.100000</td>
+      <td>1.10</td>
+      <td>2.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>FUEL RAIL GAUGE PRESSURE</td>
+      <td>33</td>
+      <td>6</td>
+      <td>0.000000</td>
+      <td>30000.00</td>
+      <td>32000.00</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>FUEL SYSTEM STATUS</td>
+      <td>659</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>FUEL TANK LEVEL INPUT</td>
+      <td>26</td>
+      <td>3</td>
+      <td>10.000000</td>
+      <td>40.00</td>
+      <td>50.00</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>FUEL TYPE</td>
+      <td>12</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>HARDWARE STATUS</td>
+      <td>677</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>IDLING</td>
+      <td>1360</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>1.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>IGNITION_STATUS</td>
+      <td>6304</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>1.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
+      <td>914</td>
+      <td>4</td>
+      <td>0.000000</td>
+      <td>80.00</td>
+      <td>120.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>INTERNAL BATTERY</td>
+      <td>1817</td>
+      <td>16</td>
+      <td>70.000000</td>
+      <td>94.00</td>
+      <td>100.00</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>LONG TERM FUEL TRIM BANK 1</td>
+      <td>674</td>
+      <td>4</td>
+      <td>-40.000000</td>
+      <td>0.00</td>
+      <td>10.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>MAF AIR FLOW RATE</td>
+      <td>28</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>40.00</td>
+      <td>320.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
+      <td>673</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
+      <td>638</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
+      <td>650</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>OXYGEN SENSOR 1 - AB: FUEL AIR EQUIVALENCE RATIO</td>
+      <td>13</td>
+      <td>1</td>
+      <td>1.000000</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
+      <td>661</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>40.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
+      <td>835</td>
+      <td>2</td>
+      <td>20.000000</td>
+      <td>100.00</td>
+      <td>100.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
+      <td>654</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>RELATIVE THROTTLE POSITION</td>
+      <td>2162</td>
+      <td>32</td>
+      <td>0.000000</td>
+      <td>5.00</td>
+      <td>32.00</td>
+      <td>119</td>
+    </tr>
+    <tr>
+      <td>RUN TIME SINCE ENGINE START</td>
+      <td>1696</td>
+      <td>51</td>
+      <td>0.000000</td>
+      <td>240.00</td>
+      <td>3180.00</td>
+      <td>102</td>
+    </tr>
+    <tr>
+      <td>SHORT TERM FUEL TRIM BANK 1</td>
+      <td>725</td>
+      <td>5</td>
+      <td>-40.000000</td>
+      <td>0.00</td>
+      <td>30.00</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <td>THROTTLE POSITION</td>
+      <td>1027</td>
+      <td>4</td>
+      <td>10.000000</td>
+      <td>20.00</td>
+      <td>40.00</td>
+      <td>57</td>
+    </tr>
+    <tr>
+      <td>TIMING ADVANCE</td>
+      <td>1751</td>
+      <td>6</td>
+      <td>-10.000000</td>
+      <td>20.00</td>
+      <td>40.00</td>
+      <td>154</td>
+    </tr>
+    <tr>
+      <td>TOWING</td>
+      <td>6653</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.00</td>
+      <td>1.00</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Vehicle speed</td>
+      <td>3803</td>
+      <td>91</td>
+      <td>0.000000</td>
+      <td>25.00</td>
+      <td>175.00</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td>WARM UPS SINCE CODES CLEARED</td>
+      <td>837</td>
+      <td>5</td>
+      <td>0.000000</td>
+      <td>255.00</td>
+      <td>255.00</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table></div></details>
+<p>位置字段含义、所有未提供的单位、告警 0–5 的业务解释、部分状态编码含义、OBD 哨兵值及设备与真实车辆的对应关系仍需提供方确认。现有程序保留这些字段和原始值，因此取得说明后可更新字典，不需要恢复已被破坏的数据。</p>
+<h2>复现与验收</h2><p>推荐 Python 3.11，实际验证版本为 3.11.16。终端已进入 course 环境时：</p>
+<pre>python -m pip install -r requirements.txt
+python run_pipeline.py
+python build_delivery.py</pre>
+<p>run_pipeline.py 顺序执行预处理、对齐、正式数据、质量报告和验收；每个处理阶段只输出一行摘要。inspect_data.py 是单独的只读检查脚本，不由流水线自动执行。</p>
+<ol><li>确认 clean_wide.csv 的设备和时间键唯一、窗口起点对齐至 10 秒。</li>
+<li>随机选择宽表非空单元格，在 feature_lineage.csv 找到同设备同窗口同字段记录，再按 source_row_id 定位原始 CSV 数据行；原文件含表头时物理行号为 source_row_id+1。</li>
+<li>确认来源时间在窗口内，值等于该窗口最后一个有效原始观测；空单元格对应缺失标记 1。</li>
+<li>检查告警各编码记录数合计与原始各编码数量一致，歧义窗口的单一标签为空。</li>
+<li>查看 <a href="../data/quality/validation_results.json">validation_results.json</a> 中的实际检查项和结果；用交付清单核对文件大小与 SHA256。</li></ol>
+<p>GitHub 保存代码、文档和依赖；原始及逐条测量数据不纳入 Git 跟踪，完整输入与生成结果随离线交付包提供。</p>
+<h2>A 部分交付边界</h2><p>已完成可复现的数据整理、异常隔离、缺失规则、窗口关联、字段字典、预处理报告和程序验收。官方语义仍未提供的字段保持待确认。运行特征结论、独立告警事件识别、模型训练与效果评估由 B、C 后续完成，不将本次数据处理验收等同于建模效果验收。</p>
+</main></body></html>

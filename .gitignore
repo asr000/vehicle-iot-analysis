@@ -1,0 +1,10 @@
+# 数据由本地原始文件重新生成；完整数据随离线交付包提供。
+/data/
+/dist/
+/work/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
