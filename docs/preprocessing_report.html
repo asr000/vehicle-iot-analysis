@@ -1,103 +1,89 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>车辆物联网 A 数据工程交付报告</title><style>
-*{box-sizing:border-box}body{font:16px/1.75 'Microsoft YaHei',sans-serif;color:#17253a;background:#f3f6fb;margin:0}
-main{width:calc(100% - 32px);max-width:1248px;margin:28px auto;background:white;padding:30px 32px;border-radius:12px}
-h1{font-size:29px;margin:0 0 8px}h2{font-size:23px;margin-top:34px;border-bottom:2px solid #dce7f5;padding-bottom:7px}
-p,li{overflow-wrap:anywhere}.meta{color:#54657a}.callout{padding:16px 20px;background:#eaf3ff;border-left:4px solid #2668ad}
-.notice{background:#fff4dc;border-left:4px solid #bd7a13;padding:14px 20px}.scroll{overflow-x:auto}
-table{border-collapse:collapse;table-layout:fixed;width:100%;font-size:13px;margin:15px 0}th,td{border:1px solid #d8e0ea;padding:9px 10px;text-align:left;overflow-wrap:anywhere}
-th{background:#edf3fa}tr:nth-child(even){background:#fafcff}code{background:#edf1f7;padding:2px 5px}pre{background:#17253a;color:#f1f6ff;padding:18px;overflow:auto}
-summary{cursor:pointer;font-weight:bold;padding:10px;background:#f3f6fb}a{color:#1c62aa}@media print{body{background:white}main{margin:0;padding:0;max-width:none}.scroll{overflow:visible}h2{break-after:avoid}tr{break-inside:avoid}}
-</style></head><body><main><h1>车辆物联网 A 数据工程交付报告</h1>
-<p class="meta">生成时间：2026-10-19T20:17:55+08:00　环境：Python 3.11.16 / pandas 3.0.5 / NumPy 2.4.6</p>
-<div class="callout"><strong>程序验收已通过。</strong>正式宽表包含 35,306 个设备时间窗口、55 列；保留可解释的缺失值和原始告警编码，并提供逐单元格来源与程序验收结果。</div>
-<h2>数据介绍</h2><p>数据由用户提供，文件名为“题2_车辆物联网遥测.csv”，未提供公开下载地址或官方字段字典。共 173,853 条记录、6 列、3 个设备、52 种变量。时间范围为 2020-08-17 00:00:02 至 2020-08-24 12:23:15，时区未标注。原始文件 SHA256：<code>e0f5571f74c6922ab7b5e65a34c52b2939b79bb33768eef30b124d3467333779</code>。</p>
+<title>车辆物联网数据预处理报告</title><style>
+*{box-sizing:border-box}body{font:16px/1.8 'Microsoft YaHei',sans-serif;background:#f3f6fb;color:#17253a;margin:0}
+main{max-width:1240px;width:calc(100% - 32px);margin:24px auto;background:white;padding:30px;border-radius:12px}
+h1{font-size:28px}h2{font-size:22px;margin-top:30px;border-bottom:1px solid #d6e0eb}
+p,li,td,th{overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:12px;margin:12px 0}
+td,th{border:1px solid #d8e0ea;padding:8px;text-align:left}th{background:#edf3fa}summary{padding:12px;background:#edf3fa;cursor:pointer;font-weight:bold;margin-top:12px}
+.scroll{overflow:auto}.note{background:#eaf3ff;padding:14px;border-left:4px solid #2668ad}.pending{background:#fff4dc;padding:14px}
+code{background:#edf1f7;padding:2px 4px}pre{background:#17253a;color:white;padding:16px;overflow:auto}
+@media print{main{width:100%;margin:0;padding:0}body{background:white}tr{break-inside:avoid}}
+</style></head><body><main><h1>车辆物联网数据预处理报告</h1>
+<p>2026-10-19T20:43:10+08:00　Python 3.11.16 / pandas 3.0.5 / NumPy 2.4.6</p>
+<div class="note"><b>程序验收通过：26项。</b>主表 35,306 行、69列；原始测量值未变。主表已合并告警汇总与核心完整度，长表已合并原始告警明细与来源行号。</div>
+<h2>数据介绍与处理结果</h2>
+<p>原始文件由用户提供，共173,853条、3个设备、52种变量。未附公开下载地址或官方字段字典。数据时间为 2020-08-17 00:00:02 至 2020-08-24 12:23:15，时区未标注。</p>
 <table class="dataframe data-table">
   <thead>
     <tr style="text-align: right;">
-      <th>设备</th>
-      <th>原始记录数</th>
-      <th>变量数</th>
-      <th>起始时间</th>
-      <th>结束时间</th>
-      <th>观测窗口数</th>
-      <th>核心子集窗口</th>
-      <th>核心五项齐全</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>车辆1</td>
-      <td>15657</td>
-      <td>41</td>
-      <td>2020-08-21 14:27:04</td>
-      <td>2020-08-24 12:23:15</td>
-      <td>1547</td>
-      <td>450</td>
-      <td>356</td>
-    </tr>
-    <tr>
-      <td>车辆2</td>
-      <td>5558</td>
-      <td>50</td>
-      <td>2020-08-17 11:31:02</td>
-      <td>2020-08-19 15:47:07</td>
-      <td>767</td>
-      <td>207</td>
-      <td>67</td>
-    </tr>
-    <tr>
-      <td>车辆3</td>
-      <td>152638</td>
-      <td>42</td>
-      <td>2020-08-17 00:00:02</td>
-      <td>2020-08-23 21:39:57</td>
-      <td>32992</td>
-      <td>2479</td>
-      <td>1661</td>
-    </tr>
-  </tbody>
-</table><details><summary>原始设备编号对应表</summary><table class="dataframe data-table">
-  <thead>
-    <tr style="text-align: right;">
-      <th>设备别名</th>
-      <th>原始设备编号</th>
+      <th>device_alias</th>
+      <th>deviceId</th>
+      <th>raw_rows</th>
+      <th>variables</th>
+      <th>first_timestamp</th>
+      <th>last_timestamp</th>
+      <th>observed_windows</th>
+      <th>any_core_windows</th>
+      <th>all_core_windows</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>车辆1</td>
       <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>15657</td>
+      <td>41</td>
+      <td>2020-08-21T14:27:04.000</td>
+      <td>2020-08-24T12:23:15.000</td>
+      <td>1547</td>
+      <td>450</td>
+      <td>356</td>
     </tr>
     <tr>
       <td>车辆2</td>
       <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>5558</td>
+      <td>50</td>
+      <td>2020-08-17T11:31:02.000</td>
+      <td>2020-08-19T15:47:07.000</td>
+      <td>767</td>
+      <td>207</td>
+      <td>67</td>
     </tr>
     <tr>
       <td>车辆3</td>
       <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>152638</td>
+      <td>42</td>
+      <td>2020-08-17T00:00:02.000</td>
+      <td>2020-08-23T21:39:57.000</td>
+      <td>32992</td>
+      <td>2479</td>
+      <td>1661</td>
     </tr>
   </tbody>
-</table></details>
-<h2>清洗规则与处理结果</h2><ol>
-<li>时间：所有 timestamp 均可解析。timeMili 缺失 121,651 条，保留原值；52,202 条可比较记录的钟面差均为 5 小时 30 分钟。未据此擅自指定地理时区。</li>
-<li>重复：完全重复和“设备、时间、变量”重复均为 0，没有执行重复删除。</li>
-<li>位置：90,355 条 POSITION 均可拆成三个数值，暂命名 position_1、position_2、position_3。经纬度顺序及第三项含义等待字段说明，不将候选解释写成已知事实。</li>
-<li>数值：83,498 条非位置记录中有 29 条转换失败，全部属于 PIDNameNotAvailable。该变量共 35 条，全部退出数值宽表并单独保存；其余 83,463 条数值记录保留。异常文件之间存在重叠，不可相加计算删除数量。</li>
-<li>时间窗口：同一设备独立处理，窗口为 [起点, 起点+10秒)，每个字段取窗口内最后一个非空值，删除全部测量字段为空的窗口；不跨设备、不跨窗口传递数值。</li>
-<li>缺失：无观测保留为空，不补零、不做无限前向填充或插值。missing_mask.csv 中 1 表示缺失、0 表示有观测。未报告的时间段不生成人造完整轨迹。</li>
-<li>数值核查：提供分设备分变量的范围、分位数、负值和常量统计。对适用的连续数值使用 1.5 IQR 标记待核查候选，全部保留原值；统计极端值不等于传感器错误，未按未经确认的单位阈值裁剪。</li></ol>
-<h2>覆盖率与窗口选择</h2><p>下表是各字段的<strong>缺失百分比</strong>，分母为对应设备实际存在遥测记录的 10 秒窗口。长表的 value 无缺失，不代表每个变量在每个窗口都有观测。没有任何遥测记录的完整空档未计入该分母。</p>
-<div class="scroll"><table class="dataframe data-table">
+</table>
+<ol><li>timestamp全部可解析。timeMili缺失121,651条；52,202条可比较记录与其UTC时间的钟面差均为5小时30分钟，不据此指定原始地理时区。</li>
+<li>完全重复和设备、时间、变量重复均为0。</li><li>90,355条POSITION均拆成三个数值，暂用position_1/2/3；原始顺序保留。</li>
+<li>非位置记录中29条数值转换失败，均属于PIDNameNotAvailable；该变量35条全部不进入数值宽表，原始记录保留在长表和统一核查表。</li>
+<li>按设备独立整理为左闭右开的10秒窗口，每列取窗口内最后一个非空值；不补零、不插值、不跨窗口或跨设备沿用。</li>
+<li>缺失标记可用主表测量字段的isna()直接得到。核心变量子集可按core_feature_count &gt; 0筛选；五项齐全可按has_all_core_features == 1筛选。</li>
+<li>统计极值只作核查候选，不据此删除原始观测。多个核查原因合在review_reason一列，用竖线连接；同一原始记录只保留一行。</li></ol>
+<h2>合并后的两份数据</h2>
+<p><b>clean_wide.csv</b>：设备和窗口两列键、53个测量字段、12个告警汇总字段及2个核心完整度字段。只有53个测量字段适合作为候选输入；告警汇总属于目标相关信息，建模时不能混入输入特征。</p>
+<p><b>telemetry_long.csv</b>：全部173,853条原始记录、原始列、告警编码及source_row_id和window_start。source_row_id从1开始；带表头的原CSV物理行号为该值+1。</p>
+<p>主表每行表示窗口内汇总，并不表示所有变量在窗口起点同时采到。告警预测应使用事件之前的原始观测；整窗汇总可能包含较晚观测。</p>
+<h2>覆盖情况</h2><p>以下为缺失百分比，分母是有遥测记录的设备窗口，不包括完全没有上报的日历空档。10秒是工程基线，未宣称经模型验证为最优。</p>
+<div class="scroll"><table class="dataframe">
   <thead>
     <tr style="text-align: right;">
-      <th>设备</th>
-      <th>X加速度缺失%</th>
-      <th>Y加速度缺失%</th>
-      <th>Z加速度缺失%</th>
-      <th>转速缺失%</th>
-      <th>车速缺失%</th>
-      <th>位置分量1缺失%</th>
+      <th>deviceId</th>
+      <th>ACCELERATION X</th>
+      <th>ACCELERATION Y</th>
+      <th>ACCELERATION Z</th>
+      <th>ENGINE RPM</th>
+      <th>Vehicle speed</th>
+      <th>position_1</th>
     </tr>
   </thead>
   <tbody>
@@ -139,592 +125,5193 @@ summary{cursor:pointer;font-weight:bold;padding:10px;background:#f3f6fb}a{color:
     </tr>
   </tbody>
 </table></div>
-<p>10 秒是本次交付的工程基线，依据主要数值变量常见约 5 秒、位置常见约 3 秒的采样间隔；不是经下游预测效果证明的最优窗口。不同窗口下的覆盖情况如下，百分比表示有效观测覆盖：</p>
-<div class="scroll"><table class="dataframe data-table">
+<p>核心变量至少一项有值的窗口为 3,136 个，五项齐全为 2,084 个。两类筛选都可以从同一主表重建，因此不再重复保存子集文件。</p>
+<h2>告警与核查</h2><p>发现12,134个同设备同时间组带有不同编码，8,799个窗口包含多个编码。code_0_count至code_5_count是标签记录数，不是独立告警事件次数。code_values保留全部编码；multi_code为1时single_alarmClass为空，不强制选最大值或多数票，也不将0直接解释为正常。</p>
+<p>核查表共 3,940 条不同原始记录，包含35条未知变量记录和3,905条统计极值候选；其中29条未知变量记录同时带有数值转换失败标记。完整原因统计见下方。</p>
+<details><summary>主表字段字典（69列）</summary><div class='scroll'><table class="dataframe data-table">
   <thead>
     <tr style="text-align: right;">
-      <th>窗口</th>
-      <th>观测窗口数</th>
-      <th>车速有效%</th>
-      <th>转速有效%</th>
-      <th>X加速度有效%</th>
-      <th>Y加速度有效%</th>
-      <th>Z加速度有效%</th>
-      <th>核心五项齐全</th>
+      <th>column</th>
+      <th>role</th>
+      <th>meaning</th>
+      <th>unit</th>
+      <th>source</th>
+      <th>dtype</th>
+      <th>aggregation</th>
+      <th>missing_rule</th>
+      <th>semantic_status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>deviceId</td>
+      <td>key</td>
+      <td>原始设备编号</td>
+      <td>不适用</td>
+      <td>deviceId</td>
+      <td>str</td>
+      <td>key</td>
+      <td>键不允许缺失</td>
+      <td>source field</td>
+    </tr>
+    <tr>
+      <td>timestamp</td>
+      <td>key</td>
+      <td>10 秒窗口起点；原始时区未提供</td>
+      <td>不适用</td>
+      <td>timestamp</td>
+      <td>datetime64[us]</td>
+      <td>key</td>
+      <td>键不允许缺失</td>
+      <td>source field</td>
+    </tr>
+    <tr>
+      <td>ABSOLULTE BAROMETRIC PRESSURE</td>
+      <td>numeric_measurement</td>
+      <td>大气绝对压力，保留原字段拼写；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ABSOLULTE BAROMETRIC PRESSURE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ABSOLUTE LOAD VALUE</td>
+      <td>numeric_measurement</td>
+      <td>绝对负荷值；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ABSOLUTE LOAD VALUE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ABSOLUTE THROTTLE POSITION B</td>
+      <td>numeric_measurement</td>
+      <td>绝对节气门位置 B；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ABSOLUTE THROTTLE POSITION B</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ABSOLUTE THROTTLE POSITION D</td>
+      <td>numeric_measurement</td>
+      <td>绝对节气门位置 D；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ABSOLUTE THROTTLE POSITION D</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ABSOLUTE THROTTLE POSITION E</td>
+      <td>numeric_measurement</td>
+      <td>绝对节气门位置 E；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ABSOLUTE THROTTLE POSITION E</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ACCELERATION X</td>
+      <td>numeric_measurement</td>
+      <td>X 轴加速度；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ACCELERATION X</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ACCELERATION Y</td>
+      <td>numeric_measurement</td>
+      <td>Y 轴加速度；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ACCELERATION Y</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ACCELERATION Z</td>
+      <td>numeric_measurement</td>
+      <td>Z 轴加速度；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ACCELERATION Z</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ACTUAL ENGIN - PERCENT TORQUE</td>
+      <td>numeric_measurement</td>
+      <td>实际发动机扭矩相关值，保留原拼写；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ACTUAL ENGIN - PERCENT TORQUE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>AIR INTAKE TEMPERATURE</td>
+      <td>numeric_measurement</td>
+      <td>进气温度；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>AIR INTAKE TEMPERATURE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>AMBIENT AIR TEMPERATURE</td>
+      <td>numeric_measurement</td>
+      <td>环境空气温度；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>AMBIENT AIR TEMPERATURE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>CALCULATED ENGINE LOAD</td>
+      <td>numeric_measurement</td>
+      <td>计算发动机负荷；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>CALCULATED ENGINE LOAD</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>CATALYST TEMPERATURE BANK 1 SENSOR 1</td>
+      <td>numeric_measurement</td>
+      <td>第一列气缸第一传感器催化器温度；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>CATALYST TEMPERATURE BANK 1 SENSOR 1</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>COMMANDED EVAPORATIVE PURGE</td>
+      <td>numeric_measurement</td>
+      <td>蒸发排放清除指令；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>COMMANDED EVAPORATIVE PURGE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>COMMANDED THROTTLE ACTUATOR</td>
+      <td>numeric_measurement</td>
+      <td>节气门执行器指令；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>COMMANDED THROTTLE ACTUATOR</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>CONTROL MODULE VOLTAGE</td>
+      <td>numeric_measurement</td>
+      <td>控制模块电压相关值；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>CONTROL MODULE VOLTAGE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
+      <td>numeric_measurement</td>
+      <td>清除故障码后行驶距离；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>DISTANCE TRAVELED WITH MIL ON</td>
+      <td>numeric_measurement</td>
+      <td>故障指示灯点亮期间行驶距离；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>DISTANCE TRAVELED WITH MIL ON</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>DRIVER'S DEMAND ENGIN - PERCENT TORQUE</td>
+      <td>numeric_measurement</td>
+      <td>驾驶员需求发动机扭矩相关值，保留原拼写；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>DRIVER'S DEMAND ENGIN - PERCENT TORQUE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ENGINE COOLANT TEMPERATURE</td>
+      <td>numeric_measurement</td>
+      <td>发动机冷却液温度；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ENGINE COOLANT TEMPERATURE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ENGINE REFERENCE TORQUE</td>
+      <td>numeric_measurement</td>
+      <td>发动机参考扭矩；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ENGINE REFERENCE TORQUE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>ENGINE RPM</td>
+      <td>numeric_measurement</td>
+      <td>发动机转速；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>ENGINE RPM</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>EXTERNAL BATTERY</td>
+      <td>numeric_measurement</td>
+      <td>外部电池测量值，电量或电压含义未确认；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>EXTERNAL BATTERY</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
+      <td>numeric_measurement</td>
+      <td>燃油空气指令当量比；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>FUEL RAIL GAUGE PRESSURE</td>
+      <td>numeric_measurement</td>
+      <td>燃油轨表压；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>FUEL RAIL GAUGE PRESSURE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>FUEL SYSTEM STATUS</td>
+      <td>code_or_state</td>
+      <td>燃油系统状态编码；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>FUEL SYSTEM STATUS</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>FUEL TANK LEVEL INPUT</td>
+      <td>numeric_measurement</td>
+      <td>燃油箱液位输入；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>FUEL TANK LEVEL INPUT</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>FUEL TYPE</td>
+      <td>code_or_state</td>
+      <td>燃料类型编码；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>FUEL TYPE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>HARDWARE STATUS</td>
+      <td>code_or_state</td>
+      <td>硬件状态编码；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>HARDWARE STATUS</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>IDLING</td>
+      <td>code_or_state</td>
+      <td>怠速相关状态；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>IDLING</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>IGNITION_STATUS</td>
+      <td>code_or_state</td>
+      <td>点火相关状态；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>IGNITION_STATUS</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
+      <td>numeric_measurement</td>
+      <td>进气歧管绝对压力；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>INTERNAL BATTERY</td>
+      <td>numeric_measurement</td>
+      <td>内部电池测量值，电量或电压含义未确认；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>INTERNAL BATTERY</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>LONG TERM FUEL TRIM BANK 1</td>
+      <td>numeric_measurement</td>
+      <td>第一列气缸长期燃油修正；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>LONG TERM FUEL TRIM BANK 1</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>MAF AIR FLOW RATE</td>
+      <td>numeric_measurement</td>
+      <td>空气质量流量；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>MAF AIR FLOW RATE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
+      <td>code_or_state</td>
+      <td>清除故障码后监测状态编码；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
+      <td>code_or_state</td>
+      <td>本驾驶周期监测状态编码；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
+      <td>code_or_state</td>
+      <td>车辆符合的 OBD 标准编码；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>OXYGEN SENSOR 1 - AB: FUEL AIR EQUIVALENCE RATIO</td>
+      <td>numeric_measurement</td>
+      <td>氧传感器 1 AB 燃油空气当量比；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>OXYGEN SENSOR 1 - AB: FUEL AIR EQUIVALENCE RATIO</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
+      <td>numeric_measurement</td>
+      <td>氧传感器 1 B 短期燃油修正；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
+      <td>numeric_measurement</td>
+      <td>氧传感器 2 B 短期燃油修正；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
+      <td>code_or_state</td>
+      <td>两列气缸氧传感器配置编码；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>RELATIVE THROTTLE POSITION</td>
+      <td>numeric_measurement</td>
+      <td>相对节气门位置；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>RELATIVE THROTTLE POSITION</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>RUN TIME SINCE ENGINE START</td>
+      <td>numeric_measurement</td>
+      <td>发动机启动后运行时间；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>RUN TIME SINCE ENGINE START</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>SHORT TERM FUEL TRIM BANK 1</td>
+      <td>numeric_measurement</td>
+      <td>第一列气缸短期燃油修正；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>SHORT TERM FUEL TRIM BANK 1</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>THROTTLE POSITION</td>
+      <td>numeric_measurement</td>
+      <td>节气门位置；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>THROTTLE POSITION</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>TIMING ADVANCE</td>
+      <td>numeric_measurement</td>
+      <td>点火提前相关值；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>TIMING ADVANCE</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>TOWING</td>
+      <td>code_or_state</td>
+      <td>拖车相关状态；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>TOWING</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>Vehicle speed</td>
+      <td>numeric_measurement</td>
+      <td>车速；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>Vehicle speed</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>WARM UPS SINCE CODES CLEARED</td>
+      <td>numeric_measurement</td>
+      <td>清除故障码后暖机次数；中文解释仅依据字段名</td>
+      <td>未提供，未转换单位</td>
+      <td>WARM UPS SINCE CODES CLEARED</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>position_1</td>
+      <td>position_component</td>
+      <td>POSITION 按逗号拆分的第 1 项；坐标顺序和物理含义待确认</td>
+      <td>未提供</td>
+      <td>POSITION</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>position_2</td>
+      <td>position_component</td>
+      <td>POSITION 按逗号拆分的第 2 项；坐标顺序和物理含义待确认</td>
+      <td>未提供</td>
+      <td>POSITION</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>position_3</td>
+      <td>position_component</td>
+      <td>POSITION 按逗号拆分的第 3 项；坐标顺序和物理含义待确认</td>
+      <td>未提供</td>
+      <td>POSITION</td>
+      <td>float64</td>
+      <td>last non-null observation inside left-closed 10s window</td>
+      <td>该窗口无观测则为空；不补零、不插值、不跨窗口沿用</td>
+      <td>official dictionary not supplied</td>
+    </tr>
+    <tr>
+      <td>code_0_count</td>
+      <td>label_summary</td>
+      <td>对应原始编码在窗口内的标签记录数，不是独立事件次数</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>code_1_count</td>
+      <td>label_summary</td>
+      <td>对应原始编码在窗口内的标签记录数，不是独立事件次数</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>code_2_count</td>
+      <td>label_summary</td>
+      <td>对应原始编码在窗口内的标签记录数，不是独立事件次数</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>code_3_count</td>
+      <td>label_summary</td>
+      <td>对应原始编码在窗口内的标签记录数，不是独立事件次数</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>code_4_count</td>
+      <td>label_summary</td>
+      <td>对应原始编码在窗口内的标签记录数，不是独立事件次数</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>code_5_count</td>
+      <td>label_summary</td>
+      <td>对应原始编码在窗口内的标签记录数，不是独立事件次数</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>window_end</td>
+      <td>window_metadata</td>
+      <td>窗口右边界，不包含该时刻</td>
+      <td>日期时间，时区未提供</td>
+      <td>窗口起点加10秒</td>
+      <td>str</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>record_count</td>
+      <td>label_summary</td>
+      <td>窗口原始标签记录总数，不是独立事件次数</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>code_count</td>
+      <td>label_summary</td>
+      <td>窗口不同编码数量</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>code_values</td>
+      <td>label_summary</td>
+      <td>窗口编码集合，竖线分隔，包含0</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>str</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>single_alarmClass</td>
+      <td>label_summary</td>
+      <td>只有一个编码时填写，多编码时为空，编码业务含义未确认</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>float64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>multi_code</td>
+      <td>label_summary</td>
+      <td>1表示多编码，0表示编码唯一</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>原始alarmClass</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>core_feature_count</td>
+      <td>coverage_metadata</td>
+      <td>五项核心变量中有观测的数量</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>五项核心字段有效性</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+    <tr>
+      <td>has_all_core_features</td>
+      <td>coverage_metadata</td>
+      <td>五项核心变量是否全部有观测，1是0否</td>
+      <td>记录数或编码，详见meaning</td>
+      <td>五项核心字段有效性</td>
+      <td>int64</td>
+      <td>window summary</td>
+      <td>single_alarmClass在多编码窗口为空；计数0表示该编码无记录</td>
+      <td>derived metadata; alarm business meanings not supplied</td>
+    </tr>
+  </tbody>
+</table></div></details><details><summary>采样间隔统计</summary><div class='scroll'><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>deviceId</th>
+      <th>variable</th>
+      <th>record_count</th>
+      <th>median_gap_s</th>
+      <th>p90_gap_s</th>
+      <th>max_gap_s</th>
+      <th>gaps_over_10s</th>
+      <th>gaps_over_60s</th>
+      <th>gaps_over_300s</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ABSOLUTE LOAD VALUE</td>
+      <td>193</td>
+      <td>28.00</td>
+      <td>86.7000</td>
+      <td>239072.000</td>
+      <td>127</td>
+      <td>36</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION B</td>
+      <td>383</td>
+      <td>10.00</td>
+      <td>53.0000</td>
+      <td>239072.000</td>
+      <td>127</td>
+      <td>25</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION D</td>
+      <td>366</td>
+      <td>10.00</td>
+      <td>58.8000</td>
+      <td>239048.000</td>
+      <td>125</td>
+      <td>28</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION E</td>
+      <td>320</td>
+      <td>10.00</td>
+      <td>60.0000</td>
+      <td>239072.000</td>
+      <td>134</td>
+      <td>30</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ACCELERATION X</td>
+      <td>760</td>
+      <td>5.00</td>
+      <td>15.0000</td>
+      <td>234607.000</td>
+      <td>94</td>
+      <td>26</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ACCELERATION Y</td>
+      <td>642</td>
+      <td>5.00</td>
+      <td>28.0000</td>
+      <td>234613.000</td>
+      <td>105</td>
+      <td>27</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ACCELERATION Z</td>
+      <td>715</td>
+      <td>5.00</td>
+      <td>16.7000</td>
+      <td>234607.000</td>
+      <td>99</td>
+      <td>28</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>AIR INTAKE TEMPERATURE</td>
+      <td>135</td>
+      <td>60.00</td>
+      <td>118.8000</td>
+      <td>239072.000</td>
+      <td>116</td>
+      <td>48</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>CALCULATED ENGINE LOAD</td>
+      <td>372</td>
+      <td>10.00</td>
+      <td>58.0000</td>
+      <td>239038.000</td>
+      <td>130</td>
+      <td>28</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>CATALYST TEMPERATURE BANK 1 SENSOR 1</td>
+      <td>278</td>
+      <td>11.00</td>
+      <td>65.4000</td>
+      <td>239038.000</td>
+      <td>139</td>
+      <td>36</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>COMMANDED EVAPORATIVE PURGE</td>
+      <td>179</td>
+      <td>29.50</td>
+      <td>92.6000</td>
+      <td>239072.000</td>
+      <td>114</td>
+      <td>42</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>COMMANDED THROTTLE ACTUATOR</td>
+      <td>400</td>
+      <td>10.00</td>
+      <td>50.0000</td>
+      <td>239072.000</td>
+      <td>124</td>
+      <td>27</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>CONTROL MODULE VOLTAGE</td>
+      <td>137</td>
+      <td>60.00</td>
+      <td>130.5000</td>
+      <td>239072.000</td>
+      <td>114</td>
+      <td>49</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
+      <td>135</td>
+      <td>60.00</td>
+      <td>118.8000</td>
+      <td>239072.000</td>
+      <td>116</td>
+      <td>48</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>DISTANCE TRAVELED WITH MIL ON</td>
+      <td>99</td>
+      <td>60.00</td>
+      <td>223.9000</td>
+      <td>239072.000</td>
+      <td>98</td>
+      <td>48</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ENGINE COOLANT TEMPERATURE</td>
+      <td>157</td>
+      <td>60.00</td>
+      <td>104.1665</td>
+      <td>239072.000</td>
+      <td>116</td>
+      <td>46</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ENGINE RPM</td>
+      <td>751</td>
+      <td>5.00</td>
+      <td>12.1000</td>
+      <td>239034.000</td>
+      <td>78</td>
+      <td>25</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>EXTERNAL BATTERY</td>
+      <td>973</td>
+      <td>10.00</td>
+      <td>54.0000</td>
+      <td>233426.000</td>
+      <td>417</td>
+      <td>52</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
+      <td>208</td>
+      <td>20.00</td>
+      <td>84.8000</td>
+      <td>239072.000</td>
+      <td>131</td>
+      <td>41</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>FUEL SYSTEM STATUS</td>
+      <td>99</td>
+      <td>60.00</td>
+      <td>223.9000</td>
+      <td>239072.000</td>
+      <td>98</td>
+      <td>48</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>HARDWARE STATUS</td>
+      <td>100</td>
+      <td>60.00</td>
+      <td>181.4000</td>
+      <td>239072.000</td>
+      <td>99</td>
+      <td>49</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>IDLING</td>
+      <td>191</td>
+      <td>28.50</td>
+      <td>92.8000</td>
+      <td>239034.000</td>
+      <td>117</td>
+      <td>41</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>IGNITION_STATUS</td>
+      <td>322</td>
+      <td>60.00</td>
+      <td>85.0000</td>
+      <td>233494.000</td>
+      <td>299</td>
+      <td>122</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
+      <td>165</td>
+      <td>46.50</td>
+      <td>95.8000</td>
+      <td>239072.000</td>
+      <td>132</td>
+      <td>44</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>INTERNAL BATTERY</td>
+      <td>145</td>
+      <td>35.00</td>
+      <td>434.7000</td>
+      <td>233443.000</td>
+      <td>98</td>
+      <td>66</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>LONG TERM FUEL TRIM BANK 1</td>
+      <td>99</td>
+      <td>60.00</td>
+      <td>223.9000</td>
+      <td>239072.000</td>
+      <td>98</td>
+      <td>48</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
+      <td>99</td>
+      <td>60.00</td>
+      <td>223.9000</td>
+      <td>239072.000</td>
+      <td>98</td>
+      <td>48</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
+      <td>98</td>
+      <td>61.00</td>
+      <td>239.2000</td>
+      <td>239072.000</td>
+      <td>97</td>
+      <td>49</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
+      <td>96</td>
+      <td>61.00</td>
+      <td>269.8000</td>
+      <td>239072.000</td>
+      <td>95</td>
+      <td>49</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
+      <td>98</td>
+      <td>61.00</td>
+      <td>239.2000</td>
+      <td>239072.000</td>
+      <td>97</td>
+      <td>49</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
+      <td>135</td>
+      <td>60.00</td>
+      <td>118.8000</td>
+      <td>239072.000</td>
+      <td>116</td>
+      <td>48</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
+      <td>98</td>
+      <td>61.00</td>
+      <td>239.2000</td>
+      <td>239072.000</td>
+      <td>97</td>
+      <td>49</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>POSITION</td>
+      <td>4335</td>
+      <td>3.00</td>
+      <td>4.0000</td>
+      <td>233394.000</td>
+      <td>104</td>
+      <td>16</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>RELATIVE THROTTLE POSITION</td>
+      <td>390</td>
+      <td>10.00</td>
+      <td>53.0000</td>
+      <td>239072.000</td>
+      <td>125</td>
+      <td>26</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>RUN TIME SINCE ENGINE START</td>
+      <td>251</td>
+      <td>18.00</td>
+      <td>79.0000</td>
+      <td>239048.000</td>
+      <td>151</td>
+      <td>33</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>SHORT TERM FUEL TRIM BANK 1</td>
+      <td>108</td>
+      <td>60.00</td>
+      <td>152.8000</td>
+      <td>239072.000</td>
+      <td>102</td>
+      <td>48</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>THROTTLE POSITION</td>
+      <td>176</td>
+      <td>34.00</td>
+      <td>93.2000</td>
+      <td>239072.000</td>
+      <td>130</td>
+      <td>44</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>TIMING ADVANCE</td>
+      <td>282</td>
+      <td>11.00</td>
+      <td>66.0000</td>
+      <td>239048.000</td>
+      <td>143</td>
+      <td>32</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>TOWING</td>
+      <td>357</td>
+      <td>60.00</td>
+      <td>79.0000</td>
+      <td>233494.000</td>
+      <td>296</td>
+      <td>116</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>Vehicle speed</td>
+      <td>675</td>
+      <td>5.00</td>
+      <td>16.7000</td>
+      <td>239039.000</td>
+      <td>90</td>
+      <td>26</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>WARM UPS SINCE CODES CLEARED</td>
+      <td>135</td>
+      <td>60.00</td>
+      <td>118.8000</td>
+      <td>239072.000</td>
+      <td>116</td>
+      <td>48</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ABSOLULTE BAROMETRIC PRESSURE</td>
+      <td>70</td>
+      <td>60.00</td>
+      <td>246.6000</td>
+      <td>170756.000</td>
+      <td>61</td>
+      <td>18</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ABSOLUTE LOAD VALUE</td>
+      <td>53</td>
+      <td>53.50</td>
+      <td>61.9000</td>
+      <td>183659.000</td>
+      <td>38</td>
+      <td>10</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION B</td>
+      <td>28</td>
+      <td>60.00</td>
+      <td>62.0000</td>
+      <td>1778.000</td>
+      <td>23</td>
+      <td>7</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION D</td>
+      <td>29</td>
+      <td>60.00</td>
+      <td>62.0000</td>
+      <td>1778.000</td>
+      <td>24</td>
+      <td>6</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION E</td>
+      <td>28</td>
+      <td>60.00</td>
+      <td>62.0000</td>
+      <td>1838.000</td>
+      <td>23</td>
+      <td>6</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ACCELERATION X</td>
+      <td>159</td>
+      <td>10.00</td>
+      <td>60.3000</td>
+      <td>170766.000</td>
+      <td>70</td>
+      <td>16</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ACCELERATION Y</td>
+      <td>242</td>
+      <td>6.00</td>
+      <td>40.0000</td>
+      <td>170768.000</td>
+      <td>82</td>
+      <td>11</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ACCELERATION Z</td>
+      <td>216</td>
+      <td>6.00</td>
+      <td>60.0000</td>
+      <td>170446.000</td>
+      <td>82</td>
+      <td>19</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ACTUAL ENGIN - PERCENT TORQUE</td>
+      <td>63</td>
+      <td>10.00</td>
+      <td>20.0000</td>
+      <td>55.000</td>
+      <td>15</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>AIR INTAKE TEMPERATURE</td>
+      <td>72</td>
+      <td>60.00</td>
+      <td>187.0000</td>
+      <td>170752.000</td>
+      <td>60</td>
+      <td>17</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>AMBIENT AIR TEMPERATURE</td>
+      <td>26</td>
+      <td>60.00</td>
+      <td>791.2000</td>
+      <td>173125.000</td>
+      <td>21</td>
+      <td>10</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>CALCULATED ENGINE LOAD</td>
+      <td>110</td>
+      <td>20.00</td>
+      <td>63.8000</td>
+      <td>170752.000</td>
+      <td>68</td>
+      <td>16</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>COMMANDED EVAPORATIVE PURGE</td>
+      <td>39</td>
+      <td>60.00</td>
+      <td>64.7000</td>
+      <td>183662.000</td>
+      <td>36</td>
+      <td>11</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>COMMANDED THROTTLE ACTUATOR</td>
+      <td>28</td>
+      <td>60.00</td>
+      <td>62.0000</td>
+      <td>1778.000</td>
+      <td>24</td>
+      <td>7</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>CONTROL MODULE VOLTAGE</td>
+      <td>59</td>
+      <td>60.00</td>
+      <td>353.5000</td>
+      <td>170756.000</td>
+      <td>49</td>
+      <td>15</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
+      <td>42</td>
+      <td>60.00</td>
+      <td>62.0000</td>
+      <td>183649.000</td>
+      <td>37</td>
+      <td>10</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>DISTANCE TRAVELED WITH MIL ON</td>
+      <td>65</td>
+      <td>60.00</td>
+      <td>466.1175</td>
+      <td>170446.000</td>
+      <td>58</td>
+      <td>23</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>DRIVER'S DEMAND ENGIN - PERCENT TORQUE</td>
+      <td>60</td>
+      <td>10.00</td>
+      <td>23.8000</td>
+      <td>55.000</td>
+      <td>18</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ENGINE COOLANT TEMPERATURE</td>
+      <td>98</td>
+      <td>51.22</td>
+      <td>198.3168</td>
+      <td>170444.000</td>
+      <td>68</td>
+      <td>21</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ENGINE REFERENCE TORQUE</td>
+      <td>16</td>
+      <td>60.00</td>
+      <td>60.6000</td>
+      <td>61.000</td>
+      <td>14</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ENGINE RPM</td>
+      <td>109</td>
+      <td>20.00</td>
+      <td>133.1475</td>
+      <td>170756.533</td>
+      <td>66</td>
+      <td>20</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>EXTERNAL BATTERY</td>
+      <td>213</td>
+      <td>60.00</td>
+      <td>227.2599</td>
+      <td>151670.381</td>
+      <td>158</td>
+      <td>86</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
+      <td>28</td>
+      <td>60.00</td>
+      <td>85.6000</td>
+      <td>186018.000</td>
+      <td>24</td>
+      <td>8</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>FUEL RAIL GAUGE PRESSURE</td>
+      <td>33</td>
+      <td>16.00</td>
+      <td>47.8545</td>
+      <td>108.000</td>
+      <td>19</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>FUEL SYSTEM STATUS</td>
+      <td>41</td>
+      <td>60.00</td>
+      <td>974.4000</td>
+      <td>170768.000</td>
+      <td>40</td>
+      <td>16</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>FUEL TANK LEVEL INPUT</td>
+      <td>26</td>
+      <td>60.00</td>
+      <td>791.2000</td>
+      <td>173125.000</td>
+      <td>21</td>
+      <td>10</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>FUEL TYPE</td>
+      <td>12</td>
+      <td>60.00</td>
+      <td>71.0000</td>
+      <td>121.000</td>
+      <td>11</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>HARDWARE STATUS</td>
+      <td>55</td>
+      <td>60.00</td>
+      <td>731.7386</td>
+      <td>170768.000</td>
+      <td>54</td>
+      <td>19</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>IDLING</td>
+      <td>85</td>
+      <td>60.00</td>
+      <td>150.1000</td>
+      <td>170768.000</td>
+      <td>62</td>
+      <td>17</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>IGNITION_STATUS</td>
+      <td>139</td>
+      <td>61.00</td>
+      <td>308.9000</td>
+      <td>152038.264</td>
+      <td>132</td>
+      <td>75</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
+      <td>59</td>
+      <td>60.00</td>
+      <td>79.7000</td>
+      <td>183649.000</td>
+      <td>48</td>
+      <td>13</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>INTERNAL BATTERY</td>
+      <td>227</td>
+      <td>20.00</td>
+      <td>228.5000</td>
+      <td>151663.000</td>
+      <td>150</td>
+      <td>45</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>LONG TERM FUEL TRIM BANK 1</td>
+      <td>50</td>
+      <td>60.00</td>
+      <td>824.4000</td>
+      <td>170756.000</td>
+      <td>46</td>
+      <td>17</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>MAF AIR FLOW RATE</td>
+      <td>28</td>
+      <td>60.00</td>
+      <td>581.4000</td>
+      <td>171835.438</td>
+      <td>22</td>
+      <td>10</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
+      <td>54</td>
+      <td>60.00</td>
+      <td>763.2766</td>
+      <td>170768.000</td>
+      <td>53</td>
+      <td>19</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
+      <td>24</td>
+      <td>60.00</td>
+      <td>69.2000</td>
+      <td>186031.000</td>
+      <td>23</td>
+      <td>9</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
+      <td>40</td>
+      <td>60.00</td>
+      <td>856.2000</td>
+      <td>170768.000</td>
+      <td>39</td>
+      <td>15</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>OXYGEN SENSOR 1 - AB: FUEL AIR EQUIVALENCE RATIO</td>
+      <td>13</td>
+      <td>60.00</td>
+      <td>62.0000</td>
+      <td>824.000</td>
+      <td>10</td>
+      <td>5</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
+      <td>45</td>
+      <td>60.00</td>
+      <td>828.9000</td>
+      <td>170768.000</td>
+      <td>44</td>
+      <td>13</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
+      <td>42</td>
+      <td>60.00</td>
+      <td>62.0000</td>
+      <td>183649.000</td>
+      <td>36</td>
+      <td>10</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
+      <td>40</td>
+      <td>60.00</td>
+      <td>856.2000</td>
+      <td>170768.000</td>
+      <td>39</td>
+      <td>15</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>POSITION</td>
+      <td>1989</td>
+      <td>3.00</td>
+      <td>4.0000</td>
+      <td>151664.000</td>
+      <td>103</td>
+      <td>40</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>RELATIVE THROTTLE POSITION</td>
+      <td>82</td>
+      <td>10.00</td>
+      <td>60.0000</td>
+      <td>183649.000</td>
+      <td>40</td>
+      <td>8</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>RUN TIME SINCE ENGINE START</td>
+      <td>104</td>
+      <td>22.00</td>
+      <td>60.0000</td>
+      <td>170756.000</td>
+      <td>67</td>
+      <td>9</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>SHORT TERM FUEL TRIM BANK 1</td>
+      <td>57</td>
+      <td>60.00</td>
+      <td>783.0000</td>
+      <td>170756.000</td>
+      <td>52</td>
+      <td>16</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>THROTTLE POSITION</td>
+      <td>48</td>
+      <td>60.00</td>
+      <td>61.4000</td>
+      <td>183645.000</td>
+      <td>38</td>
+      <td>10</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>TIMING ADVANCE</td>
+      <td>69</td>
+      <td>19.00</td>
+      <td>61.0000</td>
+      <td>183662.000</td>
+      <td>43</td>
+      <td>9</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>TOWING</td>
+      <td>146</td>
+      <td>61.00</td>
+      <td>328.5202</td>
+      <td>151671.000</td>
+      <td>133</td>
+      <td>74</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>Vehicle speed</td>
+      <td>156</td>
+      <td>4.00</td>
+      <td>61.0000</td>
+      <td>170768.000</td>
+      <td>54</td>
+      <td>18</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>WARM UPS SINCE CODES CLEARED</td>
+      <td>41</td>
+      <td>60.00</td>
+      <td>67.9000</td>
+      <td>183649.000</td>
+      <td>35</td>
+      <td>10</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ABSOLUTE LOAD VALUE</td>
+      <td>851</td>
+      <td>37.00</td>
+      <td>113.0000</td>
+      <td>82764.000</td>
+      <td>649</td>
+      <td>156</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION B</td>
+      <td>1705</td>
+      <td>10.00</td>
+      <td>60.0000</td>
+      <td>82759.000</td>
+      <td>699</td>
+      <td>114</td>
+      <td>49</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION D</td>
+      <td>1722</td>
+      <td>10.00</td>
+      <td>60.0000</td>
+      <td>82759.000</td>
+      <td>655</td>
+      <td>115</td>
+      <td>49</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION E</td>
+      <td>1608</td>
+      <td>10.00</td>
+      <td>60.0000</td>
+      <td>82759.000</td>
+      <td>696</td>
+      <td>117</td>
+      <td>49</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ACCELERATION X</td>
+      <td>4127</td>
+      <td>5.00</td>
+      <td>11.0000</td>
+      <td>82757.000</td>
+      <td>433</td>
+      <td>97</td>
+      <td>51</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ACCELERATION Y</td>
+      <td>3438</td>
+      <td>5.00</td>
+      <td>21.0000</td>
+      <td>82757.000</td>
+      <td>535</td>
+      <td>100</td>
+      <td>51</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ACCELERATION Z</td>
+      <td>3516</td>
+      <td>5.00</td>
+      <td>20.0000</td>
+      <td>82757.000</td>
+      <td>522</td>
+      <td>100</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>AIR INTAKE TEMPERATURE</td>
+      <td>676</td>
+      <td>60.00</td>
+      <td>153.0000</td>
+      <td>82747.936</td>
+      <td>588</td>
+      <td>182</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>CALCULATED ENGINE LOAD</td>
+      <td>1808</td>
+      <td>10.00</td>
+      <td>60.0000</td>
+      <td>82764.000</td>
+      <td>652</td>
+      <td>116</td>
+      <td>51</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>CATALYST TEMPERATURE BANK 1 SENSOR 1</td>
+      <td>1508</td>
+      <td>10.00</td>
+      <td>60.0000</td>
+      <td>82759.000</td>
+      <td>710</td>
+      <td>118</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>COMMANDED EVAPORATIVE PURGE</td>
+      <td>601</td>
+      <td>60.00</td>
+      <td>197.1000</td>
+      <td>82764.000</td>
+      <td>544</td>
+      <td>188</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>COMMANDED THROTTLE ACTUATOR</td>
+      <td>1861</td>
+      <td>10.00</td>
+      <td>60.0000</td>
+      <td>82759.000</td>
+      <td>663</td>
+      <td>114</td>
+      <td>49</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>CONTROL MODULE VOLTAGE</td>
+      <td>679</td>
+      <td>60.00</td>
+      <td>153.0000</td>
+      <td>82759.000</td>
+      <td>586</td>
+      <td>180</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
+      <td>661</td>
+      <td>60.00</td>
+      <td>156.5000</td>
+      <td>82759.000</td>
+      <td>579</td>
+      <td>182</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>DISTANCE TRAVELED WITH MIL ON</td>
+      <td>521</td>
+      <td>60.00</td>
+      <td>287.2000</td>
+      <td>82764.000</td>
+      <td>520</td>
+      <td>198</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ENGINE COOLANT TEMPERATURE</td>
+      <td>836</td>
+      <td>55.00</td>
+      <td>99.2000</td>
+      <td>82749.000</td>
+      <td>631</td>
+      <td>166</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ENGINE RPM</td>
+      <td>3654</td>
+      <td>5.00</td>
+      <td>15.0000</td>
+      <td>82764.000</td>
+      <td>420</td>
+      <td>109</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>EXTERNAL BATTERY</td>
+      <td>8439</td>
+      <td>60.00</td>
+      <td>66.0000</td>
+      <td>66553.000</td>
+      <td>6544</td>
+      <td>2655</td>
+      <td>31</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
+      <td>914</td>
+      <td>36.00</td>
+      <td>94.4000</td>
+      <td>82759.000</td>
+      <td>646</td>
+      <td>162</td>
+      <td>49</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>FUEL SYSTEM STATUS</td>
+      <td>519</td>
+      <td>60.00</td>
+      <td>308.5000</td>
+      <td>82764.000</td>
+      <td>518</td>
+      <td>198</td>
+      <td>53</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>HARDWARE STATUS</td>
+      <td>522</td>
+      <td>60.00</td>
+      <td>285.0000</td>
+      <td>82764.000</td>
+      <td>521</td>
+      <td>198</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>IDLING</td>
+      <td>1084</td>
+      <td>21.00</td>
+      <td>81.2000</td>
+      <td>82764.000</td>
+      <td>649</td>
+      <td>143</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>IGNITION_STATUS</td>
+      <td>5843</td>
+      <td>61.00</td>
+      <td>84.0000</td>
+      <td>66553.000</td>
+      <td>5699</td>
+      <td>3070</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
+      <td>690</td>
+      <td>60.00</td>
+      <td>153.0000</td>
+      <td>82747.634</td>
+      <td>592</td>
+      <td>168</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>INTERNAL BATTERY</td>
+      <td>1445</td>
+      <td>145.50</td>
+      <td>601.0000</td>
+      <td>66895.000</td>
+      <td>1107</td>
+      <td>861</td>
+      <td>559</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>LONG TERM FUEL TRIM BANK 1</td>
+      <td>525</td>
+      <td>60.00</td>
+      <td>283.8000</td>
+      <td>82764.000</td>
+      <td>522</td>
+      <td>199</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
+      <td>520</td>
+      <td>60.00</td>
+      <td>309.6000</td>
+      <td>82764.000</td>
+      <td>519</td>
+      <td>198</td>
+      <td>53</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
+      <td>516</td>
+      <td>60.00</td>
+      <td>298.2000</td>
+      <td>82764.000</td>
+      <td>515</td>
+      <td>200</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
+      <td>514</td>
+      <td>60.00</td>
+      <td>302.6000</td>
+      <td>82764.000</td>
+      <td>513</td>
+      <td>199</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
+      <td>518</td>
+      <td>60.00</td>
+      <td>293.8000</td>
+      <td>82764.000</td>
+      <td>517</td>
+      <td>198</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
+      <td>658</td>
+      <td>60.00</td>
+      <td>170.4000</td>
+      <td>82748.540</td>
+      <td>579</td>
+      <td>182</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
+      <td>516</td>
+      <td>60.00</td>
+      <td>298.2000</td>
+      <td>82764.000</td>
+      <td>515</td>
+      <td>198</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>PIDNameNotAvailable</td>
+      <td>35</td>
+      <td>3.00</td>
+      <td>8.2000</td>
+      <td>115466.000</td>
+      <td>3</td>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>POSITION</td>
+      <td>84031</td>
+      <td>3.00</td>
+      <td>5.0000</td>
+      <td>66509.000</td>
+      <td>6450</td>
+      <td>182</td>
+      <td>29</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>RELATIVE THROTTLE POSITION</td>
+      <td>1690</td>
+      <td>10.00</td>
+      <td>60.0000</td>
+      <td>82759.000</td>
+      <td>717</td>
+      <td>114</td>
+      <td>49</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>RUN TIME SINCE ENGINE START</td>
+      <td>1341</td>
+      <td>23.00</td>
+      <td>55.0000</td>
+      <td>82751.000</td>
+      <td>875</td>
+      <td>98</td>
+      <td>49</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>SHORT TERM FUEL TRIM BANK 1</td>
+      <td>560</td>
+      <td>60.00</td>
+      <td>272.0000</td>
+      <td>82764.000</td>
+      <td>540</td>
+      <td>192</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>THROTTLE POSITION</td>
+      <td>803</td>
+      <td>50.00</td>
+      <td>114.8000</td>
+      <td>82761.238</td>
+      <td>637</td>
+      <td>164</td>
+      <td>51</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>TIMING ADVANCE</td>
+      <td>1400</td>
+      <td>14.00</td>
+      <td>60.0000</td>
+      <td>82764.000</td>
+      <td>763</td>
+      <td>120</td>
+      <td>51</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>TOWING</td>
+      <td>6150</td>
+      <td>60.00</td>
+      <td>84.0000</td>
+      <td>66553.000</td>
+      <td>5758</td>
+      <td>2984</td>
+      <td>31</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>Vehicle speed</td>
+      <td>2972</td>
+      <td>5.00</td>
+      <td>30.0000</td>
+      <td>82764.000</td>
+      <td>485</td>
+      <td>118</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>WARM UPS SINCE CODES CLEARED</td>
+      <td>661</td>
+      <td>60.00</td>
+      <td>156.5000</td>
+      <td>82758.841</td>
+      <td>579</td>
+      <td>182</td>
+      <td>50</td>
+    </tr>
+  </tbody>
+</table></div></details><details><summary>不同窗口的覆盖比较</summary><div class='scroll'><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>window_size</th>
+      <th>deviceId</th>
+      <th>observed_windows</th>
+      <th>Vehicle speed_valid_pct</th>
+      <th>ENGINE RPM_valid_pct</th>
+      <th>ACCELERATION X_valid_pct</th>
+      <th>ACCELERATION Y_valid_pct</th>
+      <th>ACCELERATION Z_valid_pct</th>
+      <th>all_core_windows</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>5s</td>
+      <td>ALL</td>
       <td>63140</td>
-      <td>5.65</td>
-      <td>6.78</td>
-      <td>7.57</td>
-      <td>6.48</td>
-      <td>6.69</td>
+      <td>5.652518</td>
+      <td>6.775420</td>
+      <td>7.567311</td>
+      <td>6.480836</td>
+      <td>6.686728</td>
       <td>2684</td>
     </tr>
     <tr>
+      <td>5s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>2968</td>
+      <td>21.394879</td>
+      <td>23.820755</td>
+      <td>24.090296</td>
+      <td>20.283019</td>
+      <td>22.776280</td>
+      <td>454</td>
+    </tr>
+    <tr>
+      <td>5s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>1395</td>
+      <td>8.315412</td>
+      <td>7.311828</td>
+      <td>10.465950</td>
+      <td>16.272401</td>
+      <td>14.408602</td>
+      <td>67</td>
+    </tr>
+    <tr>
+      <td>5s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>58777</td>
+      <td>4.794392</td>
+      <td>5.901968</td>
+      <td>6.664171</td>
+      <td>5.551491</td>
+      <td>5.691002</td>
+      <td>2163</td>
+    </tr>
+    <tr>
       <td>10s</td>
+      <td>ALL</td>
       <td>35306</td>
-      <td>6.38</td>
-      <td>7.19</td>
-      <td>8.29</td>
-      <td>7.45</td>
-      <td>7.62</td>
+      <td>6.375687</td>
+      <td>7.191412</td>
+      <td>8.293208</td>
+      <td>7.451991</td>
+      <td>7.621934</td>
       <td>2084</td>
     </tr>
     <tr>
+      <td>10s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>1547</td>
+      <td>25.597931</td>
+      <td>26.955398</td>
+      <td>28.118940</td>
+      <td>25.533290</td>
+      <td>26.890756</td>
+      <td>356</td>
+    </tr>
+    <tr>
+      <td>10s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>767</td>
+      <td>11.473272</td>
+      <td>11.734029</td>
+      <td>14.993481</td>
+      <td>21.382008</td>
+      <td>20.078227</td>
+      <td>67</td>
+    </tr>
+    <tr>
+      <td>10s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>32992</td>
+      <td>5.355844</td>
+      <td>6.159069</td>
+      <td>7.207808</td>
+      <td>6.280310</td>
+      <td>6.428831</td>
+      <td>1661</td>
+    </tr>
+    <tr>
       <td>30s</td>
+      <td>ALL</td>
       <td>13001</td>
-      <td>8.29</td>
-      <td>8.91</td>
-      <td>9.62</td>
-      <td>9.28</td>
-      <td>9.41</td>
+      <td>8.291670</td>
+      <td>8.907007</td>
+      <td>9.622337</td>
+      <td>9.283901</td>
+      <td>9.406969</td>
       <td>1061</td>
     </tr>
     <tr>
+      <td>30s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>571</td>
+      <td>30.998249</td>
+      <td>31.873905</td>
+      <td>33.274956</td>
+      <td>32.224168</td>
+      <td>32.574431</td>
+      <td>172</td>
+    </tr>
+    <tr>
+      <td>30s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>284</td>
+      <td>22.887324</td>
+      <td>25.000000</td>
+      <td>28.169014</td>
+      <td>31.690141</td>
+      <td>32.394366</td>
+      <td>61</td>
+    </tr>
+    <tr>
+      <td>30s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>12146</td>
+      <td>6.882924</td>
+      <td>7.451013</td>
+      <td>8.076733</td>
+      <td>7.681541</td>
+      <td>7.780339</td>
+      <td>828</td>
+    </tr>
+    <tr>
       <td>60s</td>
+      <td>ALL</td>
       <td>6702</td>
-      <td>10.55</td>
-      <td>10.80</td>
-      <td>11.00</td>
-      <td>10.70</td>
-      <td>10.89</td>
+      <td>10.549090</td>
+      <td>10.802745</td>
+      <td>10.996717</td>
+      <td>10.698299</td>
+      <td>10.892271</td>
       <td>700</td>
     </tr>
+    <tr>
+      <td>60s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>305</td>
+      <td>36.065574</td>
+      <td>36.393443</td>
+      <td>37.377049</td>
+      <td>37.049180</td>
+      <td>37.377049</td>
+      <td>109</td>
+    </tr>
+    <tr>
+      <td>60s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>162</td>
+      <td>34.567901</td>
+      <td>35.802469</td>
+      <td>35.802469</td>
+      <td>35.185185</td>
+      <td>37.654321</td>
+      <td>55</td>
+    </tr>
+    <tr>
+      <td>60s</td>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>6235</td>
+      <td>8.676824</td>
+      <td>8.901363</td>
+      <td>9.061748</td>
+      <td>8.773055</td>
+      <td>8.901363</td>
+      <td>536</td>
+    </tr>
   </tbody>
-</table></div>
-<p>另提供 analysis_core_windows.csv，仅筛选至少具有一项车速、转速、三轴加速度观测的 3,136 个窗口，其中五项齐全的有 2,084 个。该子集与主表的筛选差异明确记录，不能把它的缺失率当成全量数据的缺失率。</p>
-<h2>告警编码与关联规则</h2><div class="notice">发现 12,134 个同设备同时间记录组存在不同编码，8,799 个 10 秒窗口包含多个编码。未定义编码 0 为正常，未取最大值或多数票制造单一类别。</div>
-<table class="dataframe data-table">
+</table></div></details><details><summary>数值范围与极值核查</summary><div class='scroll'><table class="dataframe data-table">
   <thead>
     <tr style="text-align: right;">
-      <th>原始编码</th>
-      <th>标签记录数</th>
-      <th>记录占比%</th>
-      <th>业务含义</th>
+      <th>deviceId</th>
+      <th>feature</th>
+      <th>count</th>
+      <th>unique_values</th>
+      <th>min</th>
+      <th>p01</th>
+      <th>median</th>
+      <th>p99</th>
+      <th>max</th>
+      <th>negative_count</th>
+      <th>iqr_review_applicable</th>
+      <th>iqr_review_count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ALL</td>
+      <td>ABSOLULTE BAROMETRIC PRESSURE</td>
+      <td>70</td>
+      <td>2</td>
+      <td>2.500000</td>
+      <td>2.500000</td>
+      <td>1.000000e+02</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ABSOLUTE LOAD VALUE</td>
+      <td>1097</td>
+      <td>4</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.000000e+01</td>
+      <td>90.0000</td>
+      <td>90.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ABSOLUTE THROTTLE POSITION B</td>
+      <td>2116</td>
+      <td>35</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>1.500000e+01</td>
+      <td>35.0000</td>
+      <td>42.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>212</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ABSOLUTE THROTTLE POSITION D</td>
+      <td>2117</td>
+      <td>40</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>2.000000e+01</td>
+      <td>45.0000</td>
+      <td>58.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>173</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ABSOLUTE THROTTLE POSITION E</td>
+      <td>1956</td>
+      <td>25</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>9.000000e+00</td>
+      <td>23.4500</td>
+      <td>31.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>141</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ACCELERATION X</td>
+      <td>5046</td>
+      <td>707</td>
+      <td>-7.200000</td>
+      <td>-2.600000</td>
+      <td>5.999999e-01</td>
+      <td>4.0550</td>
+      <td>7.00</td>
+      <td>1050</td>
+      <td>True</td>
+      <td>416</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ACCELERATION Y</td>
+      <td>4322</td>
+      <td>435</td>
+      <td>-17.400002</td>
+      <td>-12.200001</td>
+      <td>-8.600000e+00</td>
+      <td>10.0000</td>
+      <td>16.00</td>
+      <td>4194</td>
+      <td>True</td>
+      <td>683</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ACCELERATION Z</td>
+      <td>4447</td>
+      <td>68</td>
+      <td>-12.500000</td>
+      <td>-1.000000</td>
+      <td>3.750000e+00</td>
+      <td>10.0000</td>
+      <td>18.75</td>
+      <td>70</td>
+      <td>True</td>
+      <td>490</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ACTUAL ENGIN - PERCENT TORQUE</td>
+      <td>63</td>
+      <td>12</td>
+      <td>5.000000</td>
+      <td>5.000000</td>
+      <td>2.500000e+01</td>
+      <td>60.0000</td>
+      <td>60.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>AIR INTAKE TEMPERATURE</td>
+      <td>883</td>
+      <td>4</td>
+      <td>20.000000</td>
+      <td>20.000000</td>
+      <td>6.000000e+01</td>
+      <td>80.0000</td>
+      <td>80.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>AMBIENT AIR TEMPERATURE</td>
+      <td>26</td>
+      <td>2</td>
+      <td>4.000000</td>
+      <td>4.000000</td>
+      <td>2.000000e+01</td>
+      <td>20.0000</td>
+      <td>20.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>CALCULATED ENGINE LOAD</td>
+      <td>2290</td>
+      <td>21</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.000000e+01</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>122</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>CATALYST TEMPERATURE BANK 1 SENSOR 1</td>
+      <td>1786</td>
+      <td>29</td>
+      <td>30.000000</td>
+      <td>30.000000</td>
+      <td>5.700000e+02</td>
+      <td>810.0000</td>
+      <td>870.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>COMMANDED EVAPORATIVE PURGE</td>
+      <td>819</td>
+      <td>11</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>92</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>COMMANDED THROTTLE ACTUATOR</td>
+      <td>2289</td>
+      <td>44</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>6.000000e+00</td>
+      <td>36.0000</td>
+      <td>47.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>110</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>CONTROL MODULE VOLTAGE</td>
+      <td>875</td>
+      <td>3</td>
+      <td>2.000000</td>
+      <td>2.000000</td>
+      <td>1.400000e+01</td>
+      <td>14.0000</td>
+      <td>14.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
+      <td>838</td>
+      <td>5</td>
+      <td>60.000000</td>
+      <td>60.000000</td>
+      <td>6.552000e+04</td>
+      <td>65520.0000</td>
+      <td>65520.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>DISTANCE TRAVELED WITH MIL ON</td>
+      <td>685</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1000.0000</td>
+      <td>1000.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>DRIVER'S DEMAND ENGIN - PERCENT TORQUE</td>
+      <td>60</td>
+      <td>13</td>
+      <td>5.000000</td>
+      <td>5.000000</td>
+      <td>4.000000e+01</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ENGINE COOLANT TEMPERATURE</td>
+      <td>1091</td>
+      <td>14</td>
+      <td>-30.000000</td>
+      <td>5.000000</td>
+      <td>8.500000e+01</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>1</td>
+      <td>True</td>
+      <td>114</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ENGINE REFERENCE TORQUE</td>
+      <td>16</td>
+      <td>2</td>
+      <td>60.000000</td>
+      <td>69.000000</td>
+      <td>1.200000e+02</td>
+      <td>120.0000</td>
+      <td>120.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>ENGINE RPM</td>
+      <td>4514</td>
+      <td>245</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.150000e+03</td>
+      <td>2648.7000</td>
+      <td>9000.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>89</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>EXTERNAL BATTERY</td>
+      <td>9625</td>
+      <td>27</td>
+      <td>8.000000</td>
+      <td>11.000000</td>
+      <td>3.800000e+01</td>
+      <td>47.0000</td>
+      <td>48.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>1237</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
+      <td>1150</td>
+      <td>6</td>
+      <td>0.100000</td>
+      <td>0.100000</td>
+      <td>1.100000e+00</td>
+      <td>2.0000</td>
+      <td>2.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>FUEL RAIL GAUGE PRESSURE</td>
+      <td>33</td>
+      <td>6</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.000000e+04</td>
+      <td>32000.0000</td>
+      <td>32000.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>FUEL SYSTEM STATUS</td>
+      <td>659</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>FUEL TANK LEVEL INPUT</td>
+      <td>26</td>
+      <td>3</td>
+      <td>10.000000</td>
+      <td>10.000000</td>
+      <td>4.000000e+01</td>
+      <td>50.0000</td>
+      <td>50.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>FUEL TYPE</td>
+      <td>12</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>HARDWARE STATUS</td>
+      <td>677</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>IDLING</td>
+      <td>1360</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>IGNITION_STATUS</td>
+      <td>6304</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
+      <td>914</td>
+      <td>4</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>8.000000e+01</td>
+      <td>120.0000</td>
+      <td>120.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>INTERNAL BATTERY</td>
+      <td>1817</td>
+      <td>16</td>
+      <td>70.000000</td>
+      <td>78.000000</td>
+      <td>9.400000e+01</td>
+      <td>98.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>52</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>LONG TERM FUEL TRIM BANK 1</td>
+      <td>674</td>
+      <td>4</td>
+      <td>-40.000000</td>
+      <td>-40.000000</td>
+      <td>0.000000e+00</td>
+      <td>10.0000</td>
+      <td>10.00</td>
+      <td>24</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>MAF AIR FLOW RATE</td>
+      <td>28</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>4.000000e+01</td>
+      <td>320.0000</td>
+      <td>320.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
+      <td>673</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
+      <td>638</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
+      <td>650</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>OXYGEN SENSOR 1 - AB: FUEL AIR EQUIVALENCE RATIO</td>
+      <td>13</td>
+      <td>1</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
+      <td>661</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>40.0000</td>
+      <td>40.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
+      <td>835</td>
+      <td>2</td>
+      <td>20.000000</td>
+      <td>20.000000</td>
+      <td>1.000000e+02</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
+      <td>654</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>RELATIVE THROTTLE POSITION</td>
+      <td>2162</td>
+      <td>32</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>5.000000e+00</td>
+      <td>25.0000</td>
+      <td>32.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>119</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>RUN TIME SINCE ENGINE START</td>
+      <td>1696</td>
+      <td>51</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>2.400000e+02</td>
+      <td>2823.0000</td>
+      <td>3180.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>102</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>SHORT TERM FUEL TRIM BANK 1</td>
+      <td>725</td>
+      <td>5</td>
+      <td>-40.000000</td>
+      <td>-40.000000</td>
+      <td>0.000000e+00</td>
+      <td>30.0000</td>
+      <td>30.00</td>
+      <td>11</td>
+      <td>True</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>THROTTLE POSITION</td>
+      <td>1027</td>
+      <td>4</td>
+      <td>10.000000</td>
+      <td>10.000000</td>
+      <td>2.000000e+01</td>
+      <td>40.0000</td>
+      <td>40.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>57</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>TIMING ADVANCE</td>
+      <td>1751</td>
+      <td>6</td>
+      <td>-10.000000</td>
+      <td>-10.000000</td>
+      <td>2.000000e+01</td>
+      <td>40.0000</td>
+      <td>40.00</td>
+      <td>21</td>
+      <td>True</td>
+      <td>154</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>TOWING</td>
+      <td>6653</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>Vehicle speed</td>
+      <td>3803</td>
+      <td>91</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>2.500000e+01</td>
+      <td>76.0000</td>
+      <td>175.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>WARM UPS SINCE CODES CLEARED</td>
+      <td>837</td>
+      <td>5</td>
+      <td>0.000000</td>
+      <td>2.500000</td>
+      <td>2.550000e+02</td>
+      <td>255.0000</td>
+      <td>255.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ABSOLUTE LOAD VALUE</td>
+      <td>193</td>
+      <td>4</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.000000e+01</td>
+      <td>90.0000</td>
+      <td>90.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION B</td>
+      <td>383</td>
+      <td>29</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.600000e+01</td>
+      <td>38.0000</td>
+      <td>42.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>33</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION D</td>
+      <td>366</td>
+      <td>27</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>2.200000e+01</td>
+      <td>44.4000</td>
+      <td>51.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION E</td>
+      <td>320</td>
+      <td>20</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.100000e+01</td>
+      <td>23.6200</td>
+      <td>26.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ACCELERATION X</td>
+      <td>760</td>
+      <td>254</td>
+      <td>-5.600000</td>
+      <td>-2.400000</td>
+      <td>4.842877e-08</td>
+      <td>2.7000</td>
+      <td>4.80</td>
+      <td>362</td>
+      <td>True</td>
+      <td>47</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ACCELERATION Y</td>
+      <td>642</td>
+      <td>35</td>
+      <td>-15.000000</td>
+      <td>-12.647500</td>
+      <td>-8.750000e+00</td>
+      <td>-6.1025</td>
+      <td>2.00</td>
+      <td>641</td>
+      <td>True</td>
+      <td>62</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ACCELERATION Z</td>
+      <td>715</td>
+      <td>43</td>
+      <td>-4.000000</td>
+      <td>-1.180000</td>
+      <td>3.500000e+00</td>
+      <td>7.5000</td>
+      <td>14.50</td>
+      <td>15</td>
+      <td>True</td>
+      <td>63</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>AIR INTAKE TEMPERATURE</td>
+      <td>135</td>
+      <td>3</td>
+      <td>20.000000</td>
+      <td>20.000000</td>
+      <td>6.000000e+01</td>
+      <td>60.0000</td>
+      <td>60.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>CALCULATED ENGINE LOAD</td>
+      <td>372</td>
+      <td>20</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.500000e+01</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>CATALYST TEMPERATURE BANK 1 SENSOR 1</td>
+      <td>278</td>
+      <td>27</td>
+      <td>30.000000</td>
+      <td>30.000000</td>
+      <td>6.900000e+02</td>
+      <td>840.0000</td>
+      <td>870.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>48</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>COMMANDED EVAPORATIVE PURGE</td>
+      <td>179</td>
+      <td>11</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000e+01</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>COMMANDED THROTTLE ACTUATOR</td>
+      <td>400</td>
+      <td>34</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>7.000000e+00</td>
+      <td>39.0100</td>
+      <td>47.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>CONTROL MODULE VOLTAGE</td>
+      <td>137</td>
+      <td>3</td>
+      <td>2.000000</td>
+      <td>2.000000</td>
+      <td>1.400000e+01</td>
+      <td>14.0000</td>
+      <td>14.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
+      <td>135</td>
+      <td>2</td>
+      <td>60.000000</td>
+      <td>60.000000</td>
+      <td>6.552000e+04</td>
+      <td>65520.0000</td>
+      <td>65520.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>DISTANCE TRAVELED WITH MIL ON</td>
+      <td>99</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ENGINE COOLANT TEMPERATURE</td>
+      <td>157</td>
+      <td>8</td>
+      <td>5.000000</td>
+      <td>5.000000</td>
+      <td>8.500000e+01</td>
+      <td>97.2000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>ENGINE RPM</td>
+      <td>751</td>
+      <td>195</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.640000e+03</td>
+      <td>2750.0000</td>
+      <td>3120.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>EXTERNAL BATTERY</td>
+      <td>973</td>
+      <td>13</td>
+      <td>34.000000</td>
+      <td>38.000000</td>
+      <td>4.100000e+01</td>
+      <td>47.2800</td>
+      <td>48.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
+      <td>208</td>
+      <td>5</td>
+      <td>0.100000</td>
+      <td>0.100000</td>
+      <td>1.100000e+00</td>
+      <td>2.0000</td>
+      <td>2.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>FUEL SYSTEM STATUS</td>
+      <td>99</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>HARDWARE STATUS</td>
+      <td>100</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>IDLING</td>
+      <td>191</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>IGNITION_STATUS</td>
+      <td>322</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
+      <td>165</td>
+      <td>3</td>
+      <td>40.000000</td>
+      <td>40.000000</td>
+      <td>8.000000e+01</td>
+      <td>120.0000</td>
+      <td>120.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>INTERNAL BATTERY</td>
+      <td>145</td>
+      <td>15</td>
+      <td>70.000000</td>
+      <td>70.880000</td>
+      <td>9.400000e+01</td>
+      <td>96.0000</td>
+      <td>98.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>LONG TERM FUEL TRIM BANK 1</td>
+      <td>99</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
+      <td>99</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
+      <td>98</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
+      <td>96</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
+      <td>98</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
+      <td>135</td>
+      <td>2</td>
+      <td>20.000000</td>
+      <td>20.000000</td>
+      <td>1.000000e+02</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
+      <td>98</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>RELATIVE THROTTLE POSITION</td>
+      <td>390</td>
+      <td>27</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>5.000000e+00</td>
+      <td>29.0000</td>
+      <td>32.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>RUN TIME SINCE ENGINE START</td>
+      <td>251</td>
+      <td>47</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.000000e+02</td>
+      <td>3120.0000</td>
+      <td>3180.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>SHORT TERM FUEL TRIM BANK 1</td>
+      <td>108</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>10.0000</td>
+      <td>10.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>THROTTLE POSITION</td>
+      <td>176</td>
+      <td>4</td>
+      <td>10.000000</td>
+      <td>10.000000</td>
+      <td>2.000000e+01</td>
+      <td>40.0000</td>
+      <td>40.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>TIMING ADVANCE</td>
+      <td>282</td>
+      <td>6</td>
+      <td>-10.000000</td>
+      <td>-1.900000</td>
+      <td>2.000000e+01</td>
+      <td>40.0000</td>
+      <td>40.00</td>
+      <td>3</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>TOWING</td>
+      <td>357</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>Vehicle speed</td>
+      <td>675</td>
+      <td>89</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>4.900000e+01</td>
+      <td>83.0000</td>
+      <td>92.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAGAB0gBAQ</td>
+      <td>WARM UPS SINCE CODES CLEARED</td>
+      <td>135</td>
+      <td>2</td>
+      <td>2.500000</td>
+      <td>2.500000</td>
+      <td>2.550000e+02</td>
+      <td>255.0000</td>
+      <td>255.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ABSOLULTE BAROMETRIC PRESSURE</td>
+      <td>70</td>
+      <td>2</td>
+      <td>2.500000</td>
+      <td>2.500000</td>
+      <td>1.000000e+02</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ABSOLUTE LOAD VALUE</td>
+      <td>53</td>
+      <td>4</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.000000e+01</td>
+      <td>90.0000</td>
+      <td>90.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION B</td>
+      <td>28</td>
+      <td>5</td>
+      <td>14.000000</td>
+      <td>14.540000</td>
+      <td>1.700000e+01</td>
+      <td>19.0000</td>
+      <td>19.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION D</td>
+      <td>29</td>
+      <td>3</td>
+      <td>15.000000</td>
+      <td>15.000000</td>
+      <td>1.500000e+01</td>
+      <td>17.0000</td>
+      <td>17.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION E</td>
+      <td>28</td>
+      <td>4</td>
+      <td>7.000000</td>
+      <td>7.000000</td>
+      <td>1.500000e+01</td>
+      <td>17.0000</td>
+      <td>17.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ACCELERATION X</td>
+      <td>159</td>
+      <td>18</td>
+      <td>-3.000000</td>
+      <td>-3.000000</td>
+      <td>5.000000e-01</td>
+      <td>7.0000</td>
+      <td>7.00</td>
+      <td>43</td>
+      <td>True</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ACCELERATION Y</td>
+      <td>242</td>
+      <td>32</td>
+      <td>-9.500000</td>
+      <td>-9.295000</td>
+      <td>0.000000e+00</td>
+      <td>15.0000</td>
+      <td>16.00</td>
+      <td>118</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ACCELERATION Z</td>
+      <td>216</td>
+      <td>25</td>
+      <td>-2.000000</td>
+      <td>-1.850000</td>
+      <td>7.000000e+00</td>
+      <td>11.0000</td>
+      <td>11.50</td>
+      <td>5</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ACTUAL ENGIN - PERCENT TORQUE</td>
+      <td>63</td>
+      <td>12</td>
+      <td>5.000000</td>
+      <td>5.000000</td>
+      <td>2.500000e+01</td>
+      <td>60.0000</td>
+      <td>60.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>AIR INTAKE TEMPERATURE</td>
+      <td>72</td>
+      <td>3</td>
+      <td>20.000000</td>
+      <td>20.000000</td>
+      <td>6.000000e+01</td>
+      <td>60.0000</td>
+      <td>60.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>AMBIENT AIR TEMPERATURE</td>
+      <td>26</td>
+      <td>2</td>
+      <td>4.000000</td>
+      <td>4.000000</td>
+      <td>2.000000e+01</td>
+      <td>20.0000</td>
+      <td>20.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>CALCULATED ENGINE LOAD</td>
+      <td>110</td>
+      <td>12</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>2.500000e+01</td>
+      <td>50.0000</td>
+      <td>55.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>COMMANDED EVAPORATIVE PURGE</td>
+      <td>39</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000e+01</td>
+      <td>20.0000</td>
+      <td>20.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>COMMANDED THROTTLE ACTUATOR</td>
+      <td>28</td>
+      <td>6</td>
+      <td>4.000000</td>
+      <td>4.540000</td>
+      <td>8.500000e+00</td>
+      <td>11.0000</td>
+      <td>11.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>CONTROL MODULE VOLTAGE</td>
+      <td>59</td>
+      <td>3</td>
+      <td>2.000000</td>
+      <td>2.000000</td>
+      <td>1.200000e+01</td>
+      <td>14.0000</td>
+      <td>14.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
+      <td>42</td>
+      <td>4</td>
+      <td>60.000000</td>
+      <td>404.400000</td>
+      <td>2.460000e+03</td>
+      <td>9540.0000</td>
+      <td>9540.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>DISTANCE TRAVELED WITH MIL ON</td>
+      <td>65</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1000.0000</td>
+      <td>1000.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>DRIVER'S DEMAND ENGIN - PERCENT TORQUE</td>
+      <td>60</td>
+      <td>13</td>
+      <td>5.000000</td>
+      <td>5.000000</td>
+      <td>4.000000e+01</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ENGINE COOLANT TEMPERATURE</td>
+      <td>98</td>
+      <td>7</td>
+      <td>-30.000000</td>
+      <td>8.800000</td>
+      <td>8.000000e+01</td>
+      <td>90.0000</td>
+      <td>90.00</td>
+      <td>1</td>
+      <td>True</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ENGINE REFERENCE TORQUE</td>
+      <td>16</td>
+      <td>2</td>
+      <td>60.000000</td>
+      <td>69.000000</td>
+      <td>1.200000e+02</td>
+      <td>120.0000</td>
+      <td>120.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>ENGINE RPM</td>
+      <td>109</td>
+      <td>10</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.500000e+03</td>
+      <td>9000.0000</td>
+      <td>9000.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>EXTERNAL BATTERY</td>
+      <td>213</td>
+      <td>5</td>
+      <td>8.000000</td>
+      <td>8.000000</td>
+      <td>1.100000e+01</td>
+      <td>12.0000</td>
+      <td>12.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
+      <td>28</td>
+      <td>2</td>
+      <td>0.100000</td>
+      <td>0.343000</td>
+      <td>1.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>FUEL RAIL GAUGE PRESSURE</td>
+      <td>33</td>
+      <td>6</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.000000e+04</td>
+      <td>32000.0000</td>
+      <td>32000.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>FUEL SYSTEM STATUS</td>
+      <td>41</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>FUEL TANK LEVEL INPUT</td>
+      <td>26</td>
+      <td>3</td>
+      <td>10.000000</td>
+      <td>10.000000</td>
+      <td>4.000000e+01</td>
+      <td>50.0000</td>
+      <td>50.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>FUEL TYPE</td>
+      <td>12</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>HARDWARE STATUS</td>
+      <td>55</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>IDLING</td>
+      <td>85</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>IGNITION_STATUS</td>
+      <td>139</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
+      <td>59</td>
+      <td>4</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>8.000000e+01</td>
+      <td>120.0000</td>
+      <td>120.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>INTERNAL BATTERY</td>
+      <td>227</td>
+      <td>7</td>
+      <td>88.000000</td>
+      <td>88.000000</td>
+      <td>9.400000e+01</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>LONG TERM FUEL TRIM BANK 1</td>
+      <td>50</td>
+      <td>3</td>
+      <td>-40.000000</td>
+      <td>-40.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>24</td>
+      <td>True</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>MAF AIR FLOW RATE</td>
+      <td>28</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>4.000000e+01</td>
+      <td>320.0000</td>
+      <td>320.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
+      <td>54</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
+      <td>24</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
+      <td>40</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>OXYGEN SENSOR 1 - AB: FUEL AIR EQUIVALENCE RATIO</td>
+      <td>13</td>
+      <td>1</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
+      <td>45</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>40.0000</td>
+      <td>40.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
+      <td>42</td>
+      <td>2</td>
+      <td>20.000000</td>
+      <td>52.800000</td>
+      <td>1.000000e+02</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
+      <td>40</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>RELATIVE THROTTLE POSITION</td>
+      <td>82</td>
+      <td>17</td>
+      <td>1.000000</td>
+      <td>3.430000</td>
+      <td>7.000000e+00</td>
+      <td>22.9000</td>
+      <td>31.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>RUN TIME SINCE ENGINE START</td>
+      <td>104</td>
+      <td>11</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.000000e+02</td>
+      <td>600.0000</td>
+      <td>600.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>SHORT TERM FUEL TRIM BANK 1</td>
+      <td>57</td>
+      <td>5</td>
+      <td>-40.000000</td>
+      <td>-40.000000</td>
+      <td>0.000000e+00</td>
+      <td>30.0000</td>
+      <td>30.00</td>
+      <td>11</td>
+      <td>True</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>THROTTLE POSITION</td>
+      <td>48</td>
+      <td>4</td>
+      <td>10.000000</td>
+      <td>10.000000</td>
+      <td>2.000000e+01</td>
+      <td>40.0000</td>
+      <td>40.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>TIMING ADVANCE</td>
+      <td>69</td>
+      <td>6</td>
+      <td>-10.000000</td>
+      <td>-3.200000</td>
+      <td>1.000000e+01</td>
+      <td>33.2000</td>
+      <td>40.00</td>
+      <td>1</td>
+      <td>True</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>TOWING</td>
+      <td>146</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>Vehicle speed</td>
+      <td>156</td>
+      <td>13</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.500000e+01</td>
+      <td>170.0000</td>
+      <td>175.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsANAB0gBAQ</td>
+      <td>WARM UPS SINCE CODES CLEARED</td>
+      <td>41</td>
+      <td>4</td>
+      <td>2.500000</td>
+      <td>38.500000</td>
+      <td>1.850000e+02</td>
+      <td>255.0000</td>
+      <td>255.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ABSOLUTE LOAD VALUE</td>
+      <td>851</td>
+      <td>4</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.000000e+01</td>
+      <td>90.0000</td>
+      <td>90.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION B</td>
+      <td>1705</td>
+      <td>31</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>1.400000e+01</td>
+      <td>34.9600</td>
+      <td>40.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>173</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION D</td>
+      <td>1722</td>
+      <td>38</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>1.900000e+01</td>
+      <td>45.0000</td>
+      <td>58.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>148</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ABSOLUTE THROTTLE POSITION E</td>
+      <td>1608</td>
+      <td>25</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>9.000000e+00</td>
+      <td>23.0000</td>
+      <td>31.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>176</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ACCELERATION X</td>
+      <td>4127</td>
+      <td>666</td>
+      <td>-7.200000</td>
+      <td>-2.600000</td>
+      <td>6.000003e-01</td>
+      <td>3.6000</td>
+      <td>6.40</td>
+      <td>645</td>
+      <td>True</td>
+      <td>514</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ACCELERATION Y</td>
+      <td>3438</td>
+      <td>380</td>
+      <td>-17.400002</td>
+      <td>-12.200001</td>
+      <td>-8.600000e+00</td>
+      <td>-4.6000</td>
+      <td>6.60</td>
+      <td>3435</td>
+      <td>True</td>
+      <td>471</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ACCELERATION Z</td>
+      <td>3516</td>
+      <td>66</td>
+      <td>-12.500000</td>
+      <td>-1.000000</td>
+      <td>3.750000e+00</td>
+      <td>8.2125</td>
+      <td>18.75</td>
+      <td>50</td>
+      <td>True</td>
+      <td>279</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>AIR INTAKE TEMPERATURE</td>
+      <td>676</td>
+      <td>4</td>
+      <td>20.000000</td>
+      <td>20.000000</td>
+      <td>6.000000e+01</td>
+      <td>80.0000</td>
+      <td>80.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>CALCULATED ENGINE LOAD</td>
+      <td>1808</td>
+      <td>20</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>3.000000e+01</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>104</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>CATALYST TEMPERATURE BANK 1 SENSOR 1</td>
+      <td>1508</td>
+      <td>29</td>
+      <td>30.000000</td>
+      <td>30.000000</td>
+      <td>5.700000e+02</td>
+      <td>807.9000</td>
+      <td>870.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>COMMANDED EVAPORATIVE PURGE</td>
+      <td>601</td>
+      <td>10</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>43</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>COMMANDED THROTTLE ACTUATOR</td>
+      <td>1861</td>
+      <td>41</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>6.000000e+00</td>
+      <td>34.4000</td>
+      <td>44.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>113</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>CONTROL MODULE VOLTAGE</td>
+      <td>679</td>
+      <td>3</td>
+      <td>2.000000</td>
+      <td>2.000000</td>
+      <td>1.400000e+01</td>
+      <td>14.0000</td>
+      <td>14.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
+      <td>661</td>
+      <td>2</td>
+      <td>60.000000</td>
+      <td>60.000000</td>
+      <td>6.552000e+04</td>
+      <td>65520.0000</td>
+      <td>65520.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>DISTANCE TRAVELED WITH MIL ON</td>
+      <td>521</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ENGINE COOLANT TEMPERATURE</td>
+      <td>836</td>
+      <td>9</td>
+      <td>10.000000</td>
+      <td>10.000000</td>
+      <td>9.000000e+01</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>94</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>ENGINE RPM</td>
+      <td>3654</td>
+      <td>214</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.090000e+03</td>
+      <td>2350.0000</td>
+      <td>3000.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>260</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>EXTERNAL BATTERY</td>
+      <td>8439</td>
+      <td>19</td>
+      <td>25.000000</td>
+      <td>35.000000</td>
+      <td>3.800000e+01</td>
+      <td>45.0000</td>
+      <td>45.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>731</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
+      <td>914</td>
+      <td>6</td>
+      <td>0.100000</td>
+      <td>0.100000</td>
+      <td>1.100000e+00</td>
+      <td>2.0000</td>
+      <td>2.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>FUEL SYSTEM STATUS</td>
+      <td>519</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>HARDWARE STATUS</td>
+      <td>522</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>IDLING</td>
+      <td>1084</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>IGNITION_STATUS</td>
+      <td>5843</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
+      <td>690</td>
+      <td>3</td>
+      <td>40.000000</td>
+      <td>40.000000</td>
+      <td>8.000000e+01</td>
+      <td>120.0000</td>
+      <td>120.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>INTERNAL BATTERY</td>
+      <td>1445</td>
+      <td>11</td>
+      <td>76.000000</td>
+      <td>78.000000</td>
+      <td>9.400000e+01</td>
+      <td>96.0000</td>
+      <td>96.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>LONG TERM FUEL TRIM BANK 1</td>
+      <td>525</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>10.0000</td>
+      <td>10.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
+      <td>520</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
+      <td>516</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
+      <td>514</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
+      <td>518</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>20.0000</td>
+      <td>20.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
+      <td>658</td>
+      <td>2</td>
+      <td>20.000000</td>
+      <td>20.000000</td>
+      <td>1.000000e+02</td>
+      <td>100.0000</td>
+      <td>100.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
+      <td>516</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>0.0000</td>
+      <td>0.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>RELATIVE THROTTLE POSITION</td>
+      <td>1690</td>
+      <td>30</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>4.000000e+00</td>
+      <td>24.1100</td>
+      <td>29.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>82</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>RUN TIME SINCE ENGINE START</td>
+      <td>1341</td>
+      <td>29</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>2.400000e+02</td>
+      <td>1500.0000</td>
+      <td>1680.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>77</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>SHORT TERM FUEL TRIM BANK 1</td>
+      <td>560</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>10.0000</td>
+      <td>20.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>THROTTLE POSITION</td>
+      <td>803</td>
+      <td>4</td>
+      <td>10.000000</td>
+      <td>10.000000</td>
+      <td>2.000000e+01</td>
+      <td>40.0000</td>
+      <td>40.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>39</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>TIMING ADVANCE</td>
+      <td>1400</td>
+      <td>6</td>
+      <td>-10.000000</td>
+      <td>-10.000000</td>
+      <td>2.000000e+01</td>
+      <td>40.0000</td>
+      <td>40.00</td>
+      <td>17</td>
+      <td>True</td>
+      <td>95</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>TOWING</td>
+      <td>6150</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000e+00</td>
+      <td>1.0000</td>
+      <td>1.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>Vehicle speed</td>
+      <td>2972</td>
+      <td>79</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>2.300000e+01</td>
+      <td>69.0000</td>
+      <td>79.00</td>
+      <td>0</td>
+      <td>True</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>zRYzhAEAHAABAAAKCRtcAAsAtwB1gBAQ</td>
+      <td>WARM UPS SINCE CODES CLEARED</td>
+      <td>661</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>2.500000</td>
+      <td>2.550000e+02</td>
+      <td>255.0000</td>
+      <td>255.00</td>
+      <td>0</td>
+      <td>False</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table></div></details><details><summary>原始编码分布</summary><div class='scroll'><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>alarmClass</th>
+      <th>record_count</th>
+      <th>record_pct</th>
+      <th>meaning</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>0</td>
       <td>133468</td>
-      <td>76.77</td>
-      <td>未提供；不推断为正常或某种故障</td>
+      <td>76.770605</td>
+      <td>未提供，不推断正常或故障</td>
     </tr>
     <tr>
       <td>1</td>
       <td>13539</td>
-      <td>7.79</td>
-      <td>未提供；不推断为正常或某种故障</td>
+      <td>7.787614</td>
+      <td>未提供，不推断正常或故障</td>
     </tr>
     <tr>
       <td>2</td>
       <td>8306</td>
-      <td>4.78</td>
-      <td>未提供；不推断为正常或某种故障</td>
+      <td>4.777599</td>
+      <td>未提供，不推断正常或故障</td>
     </tr>
     <tr>
       <td>3</td>
       <td>5480</td>
-      <td>3.15</td>
-      <td>未提供；不推断为正常或某种故障</td>
+      <td>3.152088</td>
+      <td>未提供，不推断正常或故障</td>
     </tr>
     <tr>
       <td>4</td>
       <td>7337</td>
-      <td>4.22</td>
-      <td>未提供；不推断为正常或某种故障</td>
+      <td>4.220232</td>
+      <td>未提供，不推断正常或故障</td>
     </tr>
     <tr>
       <td>5</td>
       <td>5723</td>
-      <td>3.29</td>
-      <td>未提供；不推断为正常或某种故障</td>
+      <td>3.291862</td>
+      <td>未提供，不推断正常或故障</td>
     </tr>
   </tbody>
-</table>
-<p>alarm_records.csv 保留全部 173,853 条原始标签记录及原始数据行号，包含编码 0；它们不是已经去重识别的独立告警事件。alarm_windows.csv 按 deviceId、timestamp 与 clean_wide.csv 关联，保留每个编码的记录数、编码集合和 multi_code。single_alarmClass 仅在窗口内只有一个编码时填写，多编码窗口保持为空。编码记录数不等于独立告警发生次数。</p>
-<p>C 应结合完整告警明细定义事件或分类样本；做告警前状态预测时只能使用事件发生前的原始观测。整窗汇总可能包含窗口后部观测，不能直接作为窗口起点或较早事件的预测输入。编码汇总列也不应作为输入特征泄漏标签。</p>
-<h2>字段说明与数值核查</h2><p>正式宽表共 2 个键和 53 个测量字段。完整字典见 <a href="../data/quality/data_dictionary.csv">data_dictionary.csv</a>；中文解释依据原变量名，不代表官方单位或编码释义。</p>
-<details><summary>展开 50 种数值变量的统计范围与核查数量</summary><div class="scroll"><table class="dataframe data-table">
+</table></div></details><details><summary>统一核查表中的原因统计</summary><div class='scroll'><table class="dataframe data-table">
   <thead>
     <tr style="text-align: right;">
-      <th>原始变量名</th>
-      <th>数值记录数</th>
-      <th>不同值数量</th>
-      <th>最小值</th>
-      <th>中位数</th>
-      <th>最大值</th>
-      <th>全局IQR候选数</th>
+      <th>reason</th>
+      <th>record_count</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>ABSOLULTE BAROMETRIC PRESSURE</td>
-      <td>70</td>
-      <td>2</td>
-      <td>2.500000</td>
-      <td>100.00</td>
-      <td>100.00</td>
-      <td>0</td>
+      <td>iqr_candidate_retained</td>
+      <td>3905</td>
     </tr>
     <tr>
-      <td>ABSOLUTE LOAD VALUE</td>
-      <td>1097</td>
-      <td>4</td>
-      <td>0.000000</td>
-      <td>30.00</td>
-      <td>90.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>ABSOLUTE THROTTLE POSITION B</td>
-      <td>2116</td>
+      <td>unknown_variable</td>
       <td>35</td>
-      <td>0.000000</td>
-      <td>15.00</td>
-      <td>42.00</td>
-      <td>212</td>
     </tr>
     <tr>
-      <td>ABSOLUTE THROTTLE POSITION D</td>
-      <td>2117</td>
-      <td>40</td>
-      <td>0.000000</td>
-      <td>20.00</td>
-      <td>58.00</td>
-      <td>173</td>
-    </tr>
-    <tr>
-      <td>ABSOLUTE THROTTLE POSITION E</td>
-      <td>1956</td>
-      <td>25</td>
-      <td>0.000000</td>
-      <td>9.00</td>
-      <td>31.00</td>
-      <td>141</td>
-    </tr>
-    <tr>
-      <td>ACCELERATION X</td>
-      <td>5046</td>
-      <td>707</td>
-      <td>-7.200000</td>
-      <td>0.60</td>
-      <td>7.00</td>
-      <td>416</td>
-    </tr>
-    <tr>
-      <td>ACCELERATION Y</td>
-      <td>4322</td>
-      <td>435</td>
-      <td>-17.400002</td>
-      <td>-8.60</td>
-      <td>16.00</td>
-      <td>683</td>
-    </tr>
-    <tr>
-      <td>ACCELERATION Z</td>
-      <td>4447</td>
-      <td>68</td>
-      <td>-12.500000</td>
-      <td>3.75</td>
-      <td>18.75</td>
-      <td>490</td>
-    </tr>
-    <tr>
-      <td>ACTUAL ENGIN - PERCENT TORQUE</td>
-      <td>63</td>
-      <td>12</td>
-      <td>5.000000</td>
-      <td>25.00</td>
-      <td>60.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>AIR INTAKE TEMPERATURE</td>
-      <td>883</td>
-      <td>4</td>
-      <td>20.000000</td>
-      <td>60.00</td>
-      <td>80.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>AMBIENT AIR TEMPERATURE</td>
-      <td>26</td>
-      <td>2</td>
-      <td>4.000000</td>
-      <td>20.00</td>
-      <td>20.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>CALCULATED ENGINE LOAD</td>
-      <td>2290</td>
-      <td>21</td>
-      <td>0.000000</td>
-      <td>30.00</td>
-      <td>100.00</td>
-      <td>122</td>
-    </tr>
-    <tr>
-      <td>CATALYST TEMPERATURE BANK 1 SENSOR 1</td>
-      <td>1786</td>
+      <td>numeric_parse_failed</td>
       <td>29</td>
-      <td>30.000000</td>
-      <td>570.00</td>
-      <td>870.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>COMMANDED EVAPORATIVE PURGE</td>
-      <td>819</td>
-      <td>11</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>100.00</td>
-      <td>92</td>
-    </tr>
-    <tr>
-      <td>COMMANDED THROTTLE ACTUATOR</td>
-      <td>2289</td>
-      <td>44</td>
-      <td>0.000000</td>
-      <td>6.00</td>
-      <td>47.00</td>
-      <td>110</td>
-    </tr>
-    <tr>
-      <td>CONTROL MODULE VOLTAGE</td>
-      <td>875</td>
-      <td>3</td>
-      <td>2.000000</td>
-      <td>14.00</td>
-      <td>14.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>DISTANCE TRAVELED SINCE CODES CLEARED</td>
-      <td>838</td>
-      <td>5</td>
-      <td>60.000000</td>
-      <td>65520.00</td>
-      <td>65520.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>DISTANCE TRAVELED WITH MIL ON</td>
-      <td>685</td>
-      <td>3</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>1000.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>DRIVER'S DEMAND ENGIN - PERCENT TORQUE</td>
-      <td>60</td>
-      <td>13</td>
-      <td>5.000000</td>
-      <td>40.00</td>
-      <td>100.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>ENGINE COOLANT TEMPERATURE</td>
-      <td>1091</td>
-      <td>14</td>
-      <td>-30.000000</td>
-      <td>85.00</td>
-      <td>100.00</td>
-      <td>114</td>
-    </tr>
-    <tr>
-      <td>ENGINE REFERENCE TORQUE</td>
-      <td>16</td>
-      <td>2</td>
-      <td>60.000000</td>
-      <td>120.00</td>
-      <td>120.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>ENGINE RPM</td>
-      <td>4514</td>
-      <td>245</td>
-      <td>0.000000</td>
-      <td>1150.00</td>
-      <td>9000.00</td>
-      <td>89</td>
-    </tr>
-    <tr>
-      <td>EXTERNAL BATTERY</td>
-      <td>9625</td>
-      <td>27</td>
-      <td>8.000000</td>
-      <td>38.00</td>
-      <td>48.00</td>
-      <td>1237</td>
-    </tr>
-    <tr>
-      <td>FUEL AIR COMMANDED EQUIVALENCE RATE</td>
-      <td>1150</td>
-      <td>6</td>
-      <td>0.100000</td>
-      <td>1.10</td>
-      <td>2.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>FUEL RAIL GAUGE PRESSURE</td>
-      <td>33</td>
-      <td>6</td>
-      <td>0.000000</td>
-      <td>30000.00</td>
-      <td>32000.00</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <td>FUEL SYSTEM STATUS</td>
-      <td>659</td>
-      <td>1</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>0.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>FUEL TANK LEVEL INPUT</td>
-      <td>26</td>
-      <td>3</td>
-      <td>10.000000</td>
-      <td>40.00</td>
-      <td>50.00</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <td>FUEL TYPE</td>
-      <td>12</td>
-      <td>1</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>0.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>HARDWARE STATUS</td>
-      <td>677</td>
-      <td>1</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>0.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>IDLING</td>
-      <td>1360</td>
-      <td>2</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>1.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>IGNITION_STATUS</td>
-      <td>6304</td>
-      <td>2</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>1.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>INTAKE MANIFOLD ABSOLUTE PRESSURE</td>
-      <td>914</td>
-      <td>4</td>
-      <td>0.000000</td>
-      <td>80.00</td>
-      <td>120.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>INTERNAL BATTERY</td>
-      <td>1817</td>
-      <td>16</td>
-      <td>70.000000</td>
-      <td>94.00</td>
-      <td>100.00</td>
-      <td>52</td>
-    </tr>
-    <tr>
-      <td>LONG TERM FUEL TRIM BANK 1</td>
-      <td>674</td>
-      <td>4</td>
-      <td>-40.000000</td>
-      <td>0.00</td>
-      <td>10.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>MAF AIR FLOW RATE</td>
-      <td>28</td>
-      <td>3</td>
-      <td>0.000000</td>
-      <td>40.00</td>
-      <td>320.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>MONITOR STATUS SINCE DTCS CLEARED</td>
-      <td>673</td>
-      <td>1</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>0.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>MONITOR STATUS THIS DRIVE CYCLE</td>
-      <td>638</td>
-      <td>1</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>0.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>OBD STANDARDS THIS VEHICLE CONFORMS TO</td>
-      <td>650</td>
-      <td>1</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>0.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>OXYGEN SENSOR 1 - AB: FUEL AIR EQUIVALENCE RATIO</td>
-      <td>13</td>
-      <td>1</td>
-      <td>1.000000</td>
-      <td>1.00</td>
-      <td>1.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>OXYGEN SENSOR 1 - B: SHORT TERM FUEL TRIM</td>
-      <td>661</td>
-      <td>3</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>40.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>OXYGEN SENSOR 2 - B: SHORT TERM FUEL TRIM</td>
-      <td>835</td>
-      <td>2</td>
-      <td>20.000000</td>
-      <td>100.00</td>
-      <td>100.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>OXYGEN SENSORS PRESENT IN 2 BANKS</td>
-      <td>654</td>
-      <td>1</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>0.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>RELATIVE THROTTLE POSITION</td>
-      <td>2162</td>
-      <td>32</td>
-      <td>0.000000</td>
-      <td>5.00</td>
-      <td>32.00</td>
-      <td>119</td>
-    </tr>
-    <tr>
-      <td>RUN TIME SINCE ENGINE START</td>
-      <td>1696</td>
-      <td>51</td>
-      <td>0.000000</td>
-      <td>240.00</td>
-      <td>3180.00</td>
-      <td>102</td>
-    </tr>
-    <tr>
-      <td>SHORT TERM FUEL TRIM BANK 1</td>
-      <td>725</td>
-      <td>5</td>
-      <td>-40.000000</td>
-      <td>0.00</td>
-      <td>30.00</td>
-      <td>23</td>
-    </tr>
-    <tr>
-      <td>THROTTLE POSITION</td>
-      <td>1027</td>
-      <td>4</td>
-      <td>10.000000</td>
-      <td>20.00</td>
-      <td>40.00</td>
-      <td>57</td>
-    </tr>
-    <tr>
-      <td>TIMING ADVANCE</td>
-      <td>1751</td>
-      <td>6</td>
-      <td>-10.000000</td>
-      <td>20.00</td>
-      <td>40.00</td>
-      <td>154</td>
-    </tr>
-    <tr>
-      <td>TOWING</td>
-      <td>6653</td>
-      <td>2</td>
-      <td>0.000000</td>
-      <td>0.00</td>
-      <td>1.00</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>Vehicle speed</td>
-      <td>3803</td>
-      <td>91</td>
-      <td>0.000000</td>
-      <td>25.00</td>
-      <td>175.00</td>
-      <td>16</td>
-    </tr>
-    <tr>
-      <td>WARM UPS SINCE CODES CLEARED</td>
-      <td>837</td>
-      <td>5</td>
-      <td>0.000000</td>
-      <td>255.00</td>
-      <td>255.00</td>
-      <td>0</td>
     </tr>
   </tbody>
 </table></div></details>
-<p>位置字段含义、所有未提供的单位、告警 0–5 的业务解释、部分状态编码含义、OBD 哨兵值及设备与真实车辆的对应关系仍需提供方确认。现有程序保留这些字段和原始值，因此取得说明后可更新字典，不需要恢复已被破坏的数据。</p>
-<h2>复现与验收</h2><p>推荐 Python 3.11，实际验证版本为 3.11.16。终端已进入 course 环境时：</p>
-<pre>python -m pip install -r requirements.txt
-python run_pipeline.py
+<details><summary>程序验收结果（26项）</summary><table class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>check</th>
+      <th>passed</th>
+      <th>detail</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>source_fingerprint</td>
+      <td>True</td>
+      <td>e0f5571f74c6922ab7b5e65a34c52b2939b79bb33768eef30b124d3467333779</td>
+    </tr>
+    <tr>
+      <td>source_snapshot</td>
+      <td>True</td>
+      <td>173853 rows / 3 devices / 52 variables</td>
+    </tr>
+    <tr>
+      <td>valid_source_keys</td>
+      <td>True</td>
+      <td>keys non-null</td>
+    </tr>
+    <tr>
+      <td>unique_source_keys</td>
+      <td>True</td>
+      <td>source keys unique</td>
+    </tr>
+    <tr>
+      <td>time_offset</td>
+      <td>True</td>
+      <td>52202 comparable rows; 19800 clock seconds</td>
+    </tr>
+    <tr>
+      <td>unique_final_keys</td>
+      <td>True</td>
+      <td>35306 unique windows</td>
+    </tr>
+    <tr>
+      <td>window_boundaries</td>
+      <td>True</td>
+      <td>10s</td>
+    </tr>
+    <tr>
+      <td>merged_schema</td>
+      <td>True</td>
+      <td>53 measurements + 2 keys + 14 summary fields</td>
+    </tr>
+    <tr>
+      <td>finite_observed_values</td>
+      <td>True</td>
+      <td>all observed measurements finite</td>
+    </tr>
+    <tr>
+      <td>nonempty_measurement_windows</td>
+      <td>True</td>
+      <td>each final window has measurements</td>
+    </tr>
+    <tr>
+      <td>all_cells_match_last_original_observation</td>
+      <td>True</td>
+      <td>176299 non-null cells; no imputation or cross-window carry</td>
+    </tr>
+    <tr>
+      <td>all_sources_inside_window</td>
+      <td>True</td>
+      <td>all selected observation times inside their own window</td>
+    </tr>
+    <tr>
+      <td>core_count</td>
+      <td>True</td>
+      <td>core subset membership can be reconstructed from main table</td>
+    </tr>
+    <tr>
+      <td>core_complete_flag</td>
+      <td>True</td>
+      <td>five-core completeness flag matches observations</td>
+    </tr>
+    <tr>
+      <td>full_long_preserved</td>
+      <td>True</td>
+      <td>all source columns and rows preserved</td>
+    </tr>
+    <tr>
+      <td>long_row_ids</td>
+      <td>True</td>
+      <td>data row id + 1 equals original CSV physical line</td>
+    </tr>
+    <tr>
+      <td>long_window_start</td>
+      <td>True</td>
+      <td>long table associates with main window keys</td>
+    </tr>
+    <tr>
+      <td>global_label_counts</td>
+      <td>True</td>
+      <td>{0: 133468, 1: 13539, 2: 8306, 3: 5480, 4: 7337, 5: 5723}</td>
+    </tr>
+    <tr>
+      <td>per_window_label_counts</td>
+      <td>True</td>
+      <td>every original device/window/code count is preserved</td>
+    </tr>
+    <tr>
+      <td>label_window_coverage</td>
+      <td>True</td>
+      <td>main table covers every original labeled window</td>
+    </tr>
+    <tr>
+      <td>multicode_not_collapsed</td>
+      <td>True</td>
+      <td>8799 multicode windows</td>
+    </tr>
+    <tr>
+      <td>single_code_consistent</td>
+      <td>True</td>
+      <td>single code agrees with the retained set</td>
+    </tr>
+    <tr>
+      <td>all_code_sets_consistent</td>
+      <td>True</td>
+      <td>multicode sets are conserved, including 0</td>
+    </tr>
+    <tr>
+      <td>label_count_metadata</td>
+      <td>True</td>
+      <td>count metadata reconciles</td>
+    </tr>
+    <tr>
+      <td>unknown_records_preserved</td>
+      <td>True</td>
+      <td>all 35 unknown-variable records in unified review table</td>
+    </tr>
+    <tr>
+      <td>review_reasons_and_ids</td>
+      <td>True</td>
+      <td>review rows are unique; 29 parse failures remain explicitly marked</td>
+    </tr>
+  </tbody>
+</table></details>
+<h2>复现</h2><pre>python prepare_data.py
+python inspect_data.py
 python build_delivery.py</pre>
-<p>run_pipeline.py 顺序执行预处理、对齐、正式数据、质量报告和验收；每个处理阶段只输出一行摘要。inspect_data.py 是单独的只读检查脚本，不由流水线自动执行。</p>
-<ol><li>确认 clean_wide.csv 的设备和时间键唯一、窗口起点对齐至 10 秒。</li>
-<li>随机选择宽表非空单元格，在 feature_lineage.csv 找到同设备同窗口同字段记录，再按 source_row_id 定位原始 CSV 数据行；原文件含表头时物理行号为 source_row_id+1。</li>
-<li>确认来源时间在窗口内，值等于该窗口最后一个有效原始观测；空单元格对应缺失标记 1。</li>
-<li>检查告警各编码记录数合计与原始各编码数量一致，歧义窗口的单一标签为空。</li>
-<li>查看 <a href="../data/quality/validation_results.json">validation_results.json</a> 中的实际检查项和结果；用交付清单核对文件大小与 SHA256。</li></ol>
-<p>GitHub 保存代码、文档和依赖；原始及逐条测量数据不纳入 Git 跟踪，完整输入与生成结果随离线交付包提供。</p>
-<h2>A 部分交付边界</h2><p>已完成可复现的数据整理、异常隔离、缺失规则、窗口关联、字段字典、预处理报告和程序验收。官方语义仍未提供的字段保持待确认。运行特征结论、独立告警事件识别、模型训练与效果评估由 B、C 后续完成，不将本次数据处理验收等同于建模效果验收。</p>
+<p>固定依赖记录在requirements.txt，推荐Python3.11；实际验证为Python 3.11.16。打包前检查当前主表与验收指纹一致。</p>
+<div class="pending"><b>待提供方确认：</b>POSITION顺序与物理含义、各字段单位和状态编码、告警0–5含义及标注规则、原始timestamp时区。这些信息未用猜测补齐；程序验收验证数据一致性，不替代官方语义确认。</div>
 </main></body></html>
