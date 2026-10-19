@@ -24,7 +24,7 @@ python .\inspect_data.py
 python .\build_delivery.py
 ```
 
-三个脚本分别负责处理、检查与报告、打包。每个脚本正常输出一行摘要。打包位置为 `dist/vehicle_iot_A_delivery.zip`。原始和生成数据不提交Git，随离线包提供。
+三个脚本分别负责处理、检查与报告、打包。每个脚本正常输出一行摘要。打包位置为 `dist/vehicle_iot_A_delivery.zip`。`data/` 随仓库提交，包含原始输入、两份处理数据、统一核查表和质量数据；克隆仓库后即可运行。ZIP同时作为离线交付。
 
 ## 两份主要数据
 

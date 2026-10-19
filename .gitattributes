@@ -1,0 +1,2 @@
+# 保留数据文件原始字节，避免换行符转换破坏输入和验收指纹。
+data/** -text whitespace=cr-at-eol
