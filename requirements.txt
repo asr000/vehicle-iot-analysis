@@ -1,3 +1,9 @@
 # Verified with CPython 3.11.16, Windows, conda environment course.
 numpy==2.4.6
 pandas==3.0.5
+
+# B 部分（运行特征分析）额外依赖，已验证于 CPython 3.12 + matplotlib 3.11 / seaborn 0.13
+matplotlib>=3.7
+seaborn>=0.12
+jupyterlab>=4.0
+nbconvert>=7.0
