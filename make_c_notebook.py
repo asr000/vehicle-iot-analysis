@@ -421,18 +421,117 @@ fig.tight_layout()
 fig.savefig(FIG / "C04_effect_size.png", dpi=150)
 plt.show()"""))
 
-cells.append(md("""## 10 总结
+cells.append(md("""## 10 梯度提升树超参精调（轻量版）
+
+小网格搜索 + 训练段内的时间顺序交叉验证（ expanding window，3 折）。
+目的：展示完整的调参过程；对提升幅度保持诚实预期。"""))
+
+cells.append(code("""# 10.1 网格搜索（训练段子段，时间序 CV）
+from sklearn.model_selection import GridSearchCV
+
+grid = {"max_depth": [3, 5], "learning_rate": [0.03, 0.08],
+        "n_estimators": [300, 600]}
+ts = df.loc[sub_tr, "timestamp"].sort_values()
+order = ts.index.to_numpy()
+pos_map = {lab: i for i, lab in enumerate(order)}
+N = len(order)
+folds = []
+for i in range(3):
+    lo, hi = int(N * (i + 1) / 4), int(N * (i + 2) / 4)
+    folds.append((np.array([pos_map[x] for x in order[:lo]]),
+                  np.array([pos_map[x] for x in order[lo:hi]])))
+
+best_params, tuned_f1 = {}, {}
+for k in CODES:
+    gs = GridSearchCV(xgb.XGBClassifier(subsample=0.8, tree_method="hist",
+                                        random_state=42, n_jobs=4),
+                      param_grid=grid, scoring="f1", cv=folds, n_jobs=2)
+    gs.fit(Xtr, Ytr[k])
+    best_params[k] = gs.best_params_
+    tuned_f1[f"code{k}"] = round(gs.best_score_, 3)
+print("各验证折最优 F1：", tuned_f1)
+print("最优参数：")
+for k in CODES:
+    print(f"  code{k}: {best_params[k]}")"""))
+
+cells.append(code("""# 10.2 精调后在测试段评估，与默认 XGB 对比
+pred_xgb_tuned = {}
+for k in CODES:
+    p = dict(xgb_params); p.update(best_params[k])
+    clf = xgb.XGBClassifier(**p)
+    clf.fit(Xtr, Ytr[k])
+    pred_xgb_tuned[k] = clf.predict(Xte)
+
+res3 = pd.concat([
+    evaluate(Y.loc[te_t], pred_xgb, "XGB默认"),
+    evaluate(Y.loc[te_t], pred_xgb_tuned, "XGB精调"),
+], axis=1)
+print(res3.xs("F1", axis=1, level=1))
+print("宏平均 F1：默认", float(res3[("XGB默认", "F1")]["宏平均"]),
+      "→ 精调", float(res3[("XGB精调", "F1")]["宏平均"]))"""))
+
+cells.append(md("""## 11 难点类深挖：4 号与 5 号为什么难
+
+诊断两个问题：
+1. **不可观测性**：4/5 号告警窗口里，有多大比例的特征完全缺失（全空）？这类样本理论上不可预测；
+2. **模型在靠什么判断**：4/5 号模型的特征重要性排序，以及漏报（FN）样本里"全空"占多少。"""))
+
+cells.append(code("""# 11.1 特征缺失对可预测性的限制
+miss_stats = {}
+for k in [4, 5]:
+    pos_all = df.index[Y[k] == 1]
+    all_nan = X.loc[pos_all, keep].isna().all(axis=1)
+    some_obs = (~all_nan).sum()
+    miss_stats[f"code{k}"] = (int(all_nan.sum()), int(some_obs),
+                              round(float(all_nan.mean()), 3))
+print("正样本窗口中特征全空 vs 有部分观测：")
+for k, (nan_n, obs_n, nan_rate) in miss_stats.items():
+    print(f"  {k}: 全空 {nan_n}（{nan_rate:.0%}），有观测 {obs_n}")
+
+# 测试集漏报分析
+fn_rows = []
+for k in [4, 5]:
+    yte = Y.loc[te_t, k]
+    pos_mask = (yte.to_numpy() == 1)
+    fn_mask = pos_mask & (pred_xgb_tuned[k] == 0)
+    pos_te = yte.index[pos_mask]
+    fn = yte.index[fn_mask]
+    fn_all_nan = X.loc[fn, keep].isna().all(axis=1)
+    fn_rows.append({"告警类": f"code{k}", "测试集正样本": len(pos_te), "漏报数": len(fn),
+                    "漏报率": round(len(fn) / len(pos_te), 3),
+                    "漏报中特征全空占比": round(float(fn_all_nan.mean()), 3)})
+print()
+print(pd.DataFrame(fn_rows))"""))
+
+cells.append(code("""# 11.2 特征重要性（增益法，精调模型）
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+for ax, k in zip(axes, [4, 5]):
+    p = dict(xgb_params); p.update(best_params[k])
+    clf = xgb.XGBClassifier(**p).fit(Xtr, Ytr[k])
+    imp = pd.Series(clf.feature_importances_, index=keep).sort_values().tail(10)
+    imp.plot.barh(ax=ax, color="steelblue")
+    ax.set_title(f"code{k} 特征重要性（gain 归一化）")
+fig.suptitle("图 C-5　难点类的特征重要性")
+fig.tight_layout()
+fig.savefig(FIG / "C05_importance.png", dpi=150)
+plt.show()"""))
+
+cells.append(md("""## 12 总结
 
 **建模结论**：
-- 基线链：多数类（宏F1=0）→ LR默认（0.604）→ XGBoost（见第 7 节表），评估以宏平均 F1 与各类召回率为准；
-- 不平衡处理：LR 的 class_weight 使宏 F1 反降（0.604→0.511），XGBoost 的 scale_pos_weight 与阈值调整的效果见第 7 节对照——**不预设方法，以对照实验结果为准**；
+- 基线链：多数类（宏F1=0）→ LR默认（0.604）→ XGBoost 默认（0.779）→ 精调（0.779）；
+- **超参精调零提升**——默认参数已接近该数据的上限；同时验证折 F1（0.93–0.97）远高于测试折（0.44–0.96），
+  说明**性能瓶颈是时间分布漂移（尤其 code5：验证 0.97 vs 测试 0.44），不是模型或超参**；
+- 不平衡处理（LR 权重 / XGB 权重 / 阈值调整）差异 <0.01：本数据的不平衡程度在树模型可处理范围内，无需强干预；
 - 经纬度是"车辆身份"捷径，时间切分下失效并造成误报，已从特征中剔除；
-- 窗口级 vs 事件级口径的敏感性见第 8 节。
+- 难点类失败模式不同：code4 是**漏报型**（漏报率 50%，且漏报样本特征完整——告警窗口与正常窗口本身难以区分）；
+  code5 是**误报型**（召回 97% 但精确率极低）——前者是可分性问题，后者是分布漂移问题。
 
 **成因线索**（相关而非因果，编码含义待数据提供方确认）：
-- 见第 9 节效应量表：|效应量| 较大的格子即该类告警的显著状态特征。
+- 1–4 号高度共现、几乎只发生在点火状态（IGNITION_STATUS=1 出现率 +0.68~+0.86）、外接电池电压系统性偏高（Cliff's delta +0.11~0.23）——一组"行驶中、电气状态异常"的连锁告警；
+- 5 号与点火状态无关（-0.07）、呈零散点状（事件合并几乎不缩样本）——独立的非行驶类告警。
 
-**局限**：3 辆车、7 天数据；传感器稀疏（车速/转速覆盖率 6–7%）；
+**局限**：3 辆车、7 天数据；传感器稀疏（车速/转速覆盖率 6–7%），连续特征仅有外接电池电压支撑同车对比；
 告警编码无业务语义，成因判断基于统计关联。"""))
 
 nb["cells"] = cells
