@@ -10,7 +10,7 @@
 | 看 B 部分的运行特征分析结果 | `docs/B_运行特征分析.md`（报告章节），图表在 `figures/` |
 | 复现或修改 B 部分的分析 | `notebooks/B_running_characteristics.ipynb` |
 | B 做运行特征分析 | `data/processed/clean_wide.csv` |
-| C 做告警分析 | 主表的告警汇总列，以及 `data/processed/telemetry_long.csv` 的逐条记录 |
+| C 做告警分析 | `C_alarm_analysis.ipynb`（告警统计、成因对比、分类建模全流程）与 `figures/C01`–`C05`；报告章节见 `项目说明与汇报大纲.md` 第四部分 |
 | 核查异常记录 | `data/review/review_records.csv`，一行原始记录可带多个原因 |
 | 程序读取全部质量统计与校验结果 | `data/quality/quality_report.json` |
 | 逐文件验收 | ZIP内的 `验收清单.csv` |
