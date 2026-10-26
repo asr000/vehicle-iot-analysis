@@ -7,3 +7,17 @@ __pycache__/
 venv/
 .env
 .env.*
+
+# PPT 及汇报产物（不上传，本地保留）
+*.pptx
+演讲稿.md
+车辆物联网遥测数据分析汇报/
+车辆遥测课程汇报/
+
+# 工作区杂项（本地保留）
+.workbuddy/
+/download
+/download (1)
+
+# Office 临时文件
+~$*

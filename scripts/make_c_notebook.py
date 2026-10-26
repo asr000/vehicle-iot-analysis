@@ -516,6 +516,81 @@ fig.tight_layout()
 fig.savefig(FIG / "C05_importance.png", dpi=150)
 plt.show()"""))
 
+cells.append(md("""## 11.3 展示图表补充
+
+为报告与汇报补四张图：事件时长分布（区分长尾/单发）、code5 逐日占比（展示时间漂移）、
+逐类电压对比箱线图、逐类混淆矩阵（题目点名指标）。"""))
+
+cells.append(code("""# 图 C-07 事件时长分布（ECDF，事件定义与 8.1 节一致）
+evt_lengths = {}
+for k in CODES:
+    col = Y_sorted[k].to_numpy()
+    prev = np.roll(col, 1); prev[0] = 0
+    starts = (col == 1) & ((prev == 0) | (~gap_ok.to_numpy()))
+    evt_id = starts.cumsum()
+    pos_mask = col == 1
+    lengths = pd.Series(evt_id[pos_mask]).groupby(pd.Series(evt_id[pos_mask])).size().to_numpy()
+    evt_lengths[k] = lengths
+
+fig, ax = plt.subplots(figsize=(6, 4))
+for k in CODES:
+    xs = np.sort(evt_lengths[k])
+    ys = np.arange(1, len(xs) + 1) / len(xs)
+    ax.step(xs, ys, where="post", label=f"code{k}")
+ax.set_xscale("log")
+ax.set_xlabel("事件时长（窗口数，对数轴）"); ax.set_ylabel("累积占比")
+ax.legend(); ax.set_title("图 C-07　各类告警事件时长分布（ECDF）")
+ax.grid(alpha=0.3)
+fig.tight_layout(); fig.savefig(FIG / "C07_event_duration.png", dpi=150); plt.show()"""))
+
+cells.append(code("""# 图 C-08 code5 逐日占比（时间漂移的直接证据）
+df["_date"] = df["timestamp"].dt.date
+daily = df.groupby("_date").apply(
+    lambda g: pd.Series({
+        "窗口数": len(g),
+        "code5占比": Y.loc[g.index, 5].mean(),
+        "任一告警占比": Y.loc[g.index, [1,2,3,4,5]].any(axis=1).mean(),
+    }), include_groups=False,
+)
+fig, ax = plt.subplots(figsize=(8, 3.6))
+ax.plot(range(len(daily)), daily["code5占比"], "o-", label="code5 占比")
+ax.plot(range(len(daily)), daily["任一告警占比"], "s--", alpha=0.6, label="任一告警占比")
+ax.set_xticks(range(len(daily)))
+ax.set_xticklabels([str(d)[5:] for d in daily.index], rotation=45)
+ax.set_ylabel("窗口占比"); ax.legend()
+ax.set_title("图 C-08　code5 逐日占比（切点 2020-08-20 18:28 之后为测试段）")
+ax.axvline(len(daily) - 3.2, color="red", ls=":", alpha=0.7)
+fig.tight_layout(); fig.savefig(FIG / "C08_code5_daily.png", dpi=150); plt.show()
+df.drop(columns=["_date"], inplace=True)
+print(daily.round(3))"""))
+
+cells.append(code("""# 图 C-09 逐类电压对比箱线图（告警窗口 vs 正常窗口；窗口可同时属于多类，如实标注）
+fig, ax = plt.subplots(figsize=(9, 4.2))
+boxes, labels = [], []
+alarm_free_idx = df.index[(Y[[1,2,3,4,5]].sum(axis=1) == 0)]
+boxes.append(df.loc[alarm_free_idx, "EXTERNAL BATTERY"].dropna()); labels.append("正常")
+for k in CODES:
+    boxes.append(df.loc[df.index[Y[k] == 1], "EXTERNAL BATTERY"].dropna()); labels.append(f"code{k}")
+ax.boxplot(boxes, labels=labels, showfliers=False)
+ax.set_ylabel("EXTERNAL BATTERY（原始单位，未确认）")
+ax.set_title("图 C-09　外接电池电压：各类告警窗口 vs 正常窗口（剔除离群点）")
+fig.tight_layout(); fig.savefig(FIG / "C09_voltage_box.png", dpi=150); plt.show()"""))
+
+cells.append(code("""# 图 C-10 逐类混淆矩阵（测试段，XGB 精调模型）
+from sklearn.metrics import confusion_matrix
+fig, axes = plt.subplots(1, 5, figsize=(15, 3.2))
+for ax, k in zip(axes, CODES):
+    cm = confusion_matrix(Y.loc[te_t, k], pred_xgb_tuned[k])
+    sns.heatmap(cm, annot=True, fmt="d", cbar=False, cmap="Blues", ax=ax,
+                xticklabels=["预测无", "预测有"], yticklabels=["真实无", "真实有"])
+    ax.set_title(f"code{k}")
+fig.suptitle("图 C-10　逐类混淆矩阵（行=真实，列=预测；测试段 7,062 窗口）")
+fig.tight_layout(); fig.savefig(FIG / "C10_confusion.png", dpi=150); plt.show()
+for k in CODES:
+    cm = confusion_matrix(Y.loc[te_t, k], pred_xgb_tuned[k])
+    tn, fp, fn_, tp = cm.ravel()
+    print(f"code{k}: TN={tn} FP={fp} FN={fn_} TP={tp}")"""))
+
 cells.append(md("""## 12 总结
 
 **建模结论**：
@@ -539,5 +614,5 @@ nb["metadata"] = {
     "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
     "language_info": {"name": "python", "version": "3.13"},
 }
-nbf.write(nb, "C_alarm_analysis.ipynb")
+nbf.write(nb, "notebooks/C_alarm_analysis.ipynb")
 print("notebook 已生成")

@@ -1,9 +1,0 @@
-# 仅排除临时文件、运行缓存和打包结果；data/ 随项目提交。
-/dist/
-/work/
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-.env
-.env.*

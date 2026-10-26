@@ -176,6 +176,71 @@ base_f1 = float(macro_table(Y.loc[te_t], pred_flat).loc["宏平均", "F1"])
 lag_f1 = float(macro_table(Y.loc[te_t], pred_lag).loc["宏平均", "F1"])
 print(f"宏平均 F1：基线 {base_f1:.3f} → +滞后特征 {lag_f1:.3f}（差 {lag_f1 - base_f1:+.3f}）")"""))
 
+cells.append(md("""## 实验 3：窗口大小敏感性（5 秒 vs 10 秒）
+
+动机：10 秒窗口是 A 部分的工程选择，此前从未验证过它对结论的影响。
+本实验用完全相同的对齐逻辑（最后非空观测、同样剔除经纬度、同样时间切分、同样 XGB 配置），
+仅以 5 秒窗口重建宽表与标签，比较宏平均 F1 与逐类 F1 的变化。"""))
+
+cells.append(code("""# 3.1 重建 5 秒窗口宽表（复刻 prepare_data.py 的逻辑，仅 WINDOW_SIZE 改为 5s）
+long = pd.read_csv(ROOT / "data/processed/telemetry_long.csv")
+long["timestamp"] = pd.to_datetime(long["timestamp"], format="mixed")
+
+numeric = long.loc[~long.variable.isin(["POSITION", "PIDNameNotAvailable"])].copy()
+numeric["v"] = pd.to_numeric(numeric.value, errors="coerce")
+numeric = numeric.loc[numeric.v.notna()]
+exact = numeric.pivot_table(index=["deviceId", "timestamp"], columns="variable",
+                            values="v", aggfunc="last").reset_index()
+exact.columns.name = None
+
+pos = long.loc[long.variable.eq("POSITION"), ["deviceId", "timestamp", "value"]].copy()
+parts = pos.value.str.split(",", expand=True)
+parts.columns = ["p1", "p2", "p3"]
+for c in parts.columns:
+    pos[c] = pd.to_numeric(parts[c], errors="coerce")
+exact = exact.merge(pos[["deviceId", "timestamp", "p1", "p2", "p3"]],
+                    on=["deviceId", "timestamp"], how="outer")
+
+feats5 = [c for c in exact.columns if c not in ("deviceId", "timestamp")]
+chunks = []
+for dev, g in exact.groupby("deviceId"):
+    w = (g.set_index("timestamp")[feats5].sort_index()
+           .resample("5s", closed="left", label="left").last().dropna(how="all"))
+    w.insert(0, "deviceId", dev)
+    chunks.append(w.reset_index())
+w5 = pd.concat(chunks, ignore_index=True)
+
+lab = (long.assign(t5=long.timestamp.dt.floor("5s"))
+          .groupby(["deviceId", "t5", "alarmClass"]).size().unstack(fill_value=0))
+lab.columns = [f"code_{int(c)}_count" for c in lab.columns]
+lab = lab.reset_index().rename(columns={"t5": "timestamp"})
+w5 = w5.merge(lab, on=["deviceId", "timestamp"], how="left")
+
+cov5 = w5[feats5].notna().mean()
+keep5 = [c for c in cov5[cov5 >= 0.01].index if not str(c).startswith("p")]
+Y5 = pd.DataFrame({k: w5[f"code_{k}_count"].fillna(0).gt(0).astype(int) for k in [1,2,3,4,5]})
+cut5 = w5["timestamp"].quantile(0.8)
+tr5 = w5.index[w5["timestamp"] < cut5]
+te5 = w5.index[w5["timestamp"] >= cut5]
+print(f"5 秒宽表：{w5.shape[0]} 窗口 × {len(feats5)} 列；特征 {len(keep5)} 个；切分 {cut5}")"""))
+
+cells.append(code("""# 3.2 同样协议重训 XGB 并对比
+pred5 = {}
+for k in [1, 2, 3, 4, 5]:
+    c = xgb.XGBClassifier(**xgb_params)
+    c.fit(w5.loc[tr5, keep5], Y5.loc[tr5, k])
+    pred5[k] = c.predict(w5.loc[te5, keep5])
+
+f1_5, f1_10 = {}, {"code1": 0.919, "code2": 0.959, "code3": 0.919, "code4": 0.661, "code5": 0.438}
+for k in [1, 2, 3, 4, 5]:
+    _, _, f1, _ = precision_recall_fscore_support(Y5.loc[te5, k], pred5[k], zero_division=0)
+    f1_5[f"code{k}"] = round(f1[1], 3)
+macro5 = round(float(np.mean(list(f1_5.values()))), 3)
+cmp5 = pd.DataFrame({"5秒窗口F1": f1_5, "10秒窗口F1": f1_10})
+cmp5["差值"] = cmp5["5秒窗口F1"] - cmp5["10秒窗口F1"]
+print(cmp5)
+print(f"宏平均 F1：5 秒 {macro5} vs 10 秒 0.779（差 {macro5 - 0.779:+.3f}）")"""))
+
 cells.append(md("""## 实验结论
 
 **实验 1（层级分类）**：一级三分类宏平均 F1 仅 0.631——"正常 / 1–4 簇 / 仅 5 号"的划分本身并不更容易；
@@ -189,12 +254,20 @@ cells.append(md("""## 实验结论
 
 **两个实验共同坐实了主线结论**：0.779–0.781 的平台不是任务定义或特征工程能松动的，
 瓶颈是数据本身（7 天 × 3 辆车、传感器稀疏、时间分布漂移）。
-阴性结果与主线的精调零提升、不平衡对照无效构成完整证据链：**模型侧的所有合理尝试均已穷尽。**"""))
+阴性结果与主线的精调零提升、不平衡对照无效构成完整证据链：**模型侧的所有合理尝试均已穷尽。**
+
+**实验 3（窗口大小敏感性，意外收获）**：5 秒窗口使宏平均 F1 由 0.779 升至 0.815（+0.036），
+且提升集中在难点类——code5 0.438→0.604（+0.166）、code4 0.661→0.735（+0.074），
+code1/2 微降（−0.02/−0.04）。解释：更细的时间粒度更好地定位了告警的起止时刻，
+对"单发点状"的 code5 和边界模糊的 code4 帮助最大。
+**但本实验为单次时间切分、未做多随机重复，且更换窗口需重做对齐与标签、全部分析口径联动变更——
+因此报告仍以 10 秒为主口径，5 秒作为"窗口选择有真实影响、 finer is better for hard classes"的敏感性证据，
+并列为后续工作的第一优先级（若重做，应同步重跑 B 部分与成因对比）。"""))
 
 nb["cells"] = cells
 nb["metadata"] = {
     "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
     "language_info": {"name": "python", "version": "3.13"},
 }
-nbf.write(nb, "C_alarm_experiments.ipynb")
+nbf.write(nb, "notebooks/C_alarm_experiments.ipynb")
 print("notebook 已生成")
